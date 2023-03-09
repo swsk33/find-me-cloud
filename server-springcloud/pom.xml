@@ -50,5 +50,7 @@
 		<module>find-me-service</module>
 		<module>find-me-entity</module>
 		<module>find-me-feign</module>
+		<module>find-me-gateway</module>
+		<module>find-me-utility</module>
 	</modules>
 </project>
