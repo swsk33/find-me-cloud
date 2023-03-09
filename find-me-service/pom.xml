@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>find-me-cloud</artifactId>
+		<groupId>com.gitee.swsk33</groupId>
+		<version>1.0.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>find-me-service</artifactId>
+	<packaging>pom</packaging>
+	<description>找到我-全部业务模块父模块</description>
+
+	<dependencies>
+		<!-- Spring Web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Spring Boot 测试 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Nacos 服务发现 -->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+		</dependency>
+
+		<!-- 实体类 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-entity</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<module>find-me-user</module>
+		<module>find-me-session</module>
+	</modules>
+</project>

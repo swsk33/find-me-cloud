@@ -1,0 +1,25 @@
+# maven
+/**/target/
+
+# vscode
+/**/.vscode/
+
+# vs
+/**/.vs/
+
+# eclipse
+/**/.settings/
+/**/.classpath
+/**/.project
+
+# idea
+/**/.idea/
+/**/*.iml
+
+# vue
+/**/node_modules/
+/**/dist/
+
+# draw.io
+/**/.$*.bkp
+/**/.$*.dtmp

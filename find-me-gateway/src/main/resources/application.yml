@@ -1,0 +1,20 @@
+# \u7AEF\u53E3\u914D\u7F6E
+server:
+  port: 8800
+  tomcat:
+    max-http-form-post-size: 20MB
+
+# \u5E94\u7528\u7A0B\u5E8F\u540D
+spring:
+  application:
+    name: find-me-gateway
+  cloud:
+    # Nacos\u6CE8\u518C\u4E2D\u5FC3
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    # \u6253\u5F00\u7F51\u5173\u7684\u53D1\u73B0\u529F\u80FD
+    gateway:
+      discovery:
+        locator:
+          enabled: true

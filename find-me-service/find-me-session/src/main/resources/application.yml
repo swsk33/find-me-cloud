@@ -1,0 +1,26 @@
+# 端口配置
+server:
+  port: 8800
+  tomcat:
+    max-http-form-post-size: 20MB
+
+spring:
+  # JSON配置
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+  # 应用程序名
+  application:
+    name: find-me-session
+  cloud:
+    # Nacos注册中心
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  # Redis
+  data:
+    redis:
+      host: "127.0.0.1"
+      port: 6379
+      password: "password"

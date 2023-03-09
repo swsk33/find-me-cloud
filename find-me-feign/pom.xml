@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gitee.swsk33</groupId>
+		<artifactId>find-me-cloud</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>find-me-feign</artifactId>
+	<version>1.0.0</version>
+	<name>find-me-feign</name>
+	<description>找到我-远程调用层</description>
+
+	<dependencies>
+		<!-- OpenFeign远程调用 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+		<!-- 远程调用负载均衡 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
+
+		<!-- 实体类 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-entity</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+</project>

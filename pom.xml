@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.0.4</version>
+		<relativePath/>
+	</parent>
+	<groupId>com.gitee.swsk33</groupId>
+	<artifactId>find-me-cloud</artifactId>
+	<version>1.0.0</version>
+	<name>find-me-cloud</name>
+	<description>找到我-总模块</description>
+	<packaging>pom</packaging>
+
+	<properties>
+		<java.version>17</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring-cloud.version>2022.0.1</spring-cloud.version>
+		<spring-cloud-alibaba.version>2022.0.0.0-RC1</spring-cloud-alibaba.version>
+		<skipTests>true</skipTests>
+	</properties>
+
+	<dependencyManagement>
+		<!-- Spring Cloud 版本管理 -->
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Cloud Alibaba 版本管理 -->
+			<dependency>
+				<groupId>com.alibaba.cloud</groupId>
+				<artifactId>spring-cloud-alibaba-dependencies</artifactId>
+				<version>${spring-cloud-alibaba.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<modules>
+		<module>find-me-service</module>
+		<module>find-me-entity</module>
+		<module>find-me-feign</module>
+	</modules>
+</project>
