@@ -1,5 +1,6 @@
 package com.gitee.swsk33.findmeentity.model;
 
+import com.gitee.swsk33.findmeutility.IDGenerator;
 import jakarta.websocket.Session;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class Room implements Serializable {
 	/**
 	 * 房间id（UUID）
 	 */
-	private String id;
+	private String id = IDGenerator.generateUUID();
 
 	/**
 	 * 房间名

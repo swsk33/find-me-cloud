@@ -36,10 +36,18 @@
 			<artifactId>find-me-entity</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+
+		<!-- 封装实用类 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-utility</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>
 		<module>find-me-user</module>
 		<module>find-me-session</module>
+		<module>find-me-image</module>
 	</modules>
 </project>

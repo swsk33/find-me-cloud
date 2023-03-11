@@ -1,5 +1,7 @@
 package com.gitee.swsk33.findmeentity.dataobject;
 
+import com.gitee.swsk33.findmeentity.model.Avatar;
+import com.gitee.swsk33.findmeutility.IDGenerator;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +15,7 @@ public class User implements Serializable {
 	/**
 	 * 主键id（雪花id）
 	 */
-	private long id;
+	private long id = IDGenerator.generateSnowflakeId();
 
 	/**
 	 * 用户名
@@ -33,6 +35,6 @@ public class User implements Serializable {
 	/**
 	 * 头像url
 	 */
-	private String avatar;
+	private Avatar avatar;
 
 }

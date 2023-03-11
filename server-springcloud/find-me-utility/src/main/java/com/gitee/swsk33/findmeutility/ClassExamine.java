@@ -1,6 +1,6 @@
 package com.gitee.swsk33.findmeutility;
 
-import org.apache.commons.lang3.StringUtils;
+import cn.hutool.core.util.StrUtil;
 
 import java.lang.reflect.Field;
 
@@ -21,7 +21,7 @@ public class ClassExamine {
 		for (Field field : fields) {
 			field.setAccessible(true);
 			if (field.getType() == String.class) {
-				if (StringUtils.isEmpty((String) field.get(origin))) {
+				if (StrUtil.isEmpty((String) field.get(origin))) {
 					field.set(origin, field.get(intactObject));
 				}
 			} else {

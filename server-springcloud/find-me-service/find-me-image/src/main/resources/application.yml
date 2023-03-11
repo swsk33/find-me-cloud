@@ -12,9 +12,9 @@ spring:
       fail-on-unknown-properties: false
   # 应用程序名
   application:
-    name: find-me-user
+    name: find-me-image
   cloud:
-    # Nacos注册中心
+    # Nacos配置
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
