@@ -18,17 +18,17 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- WebSocket支持 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-
 		<!-- 封装实用类 -->
 		<dependency>
 			<groupId>com.gitee.swsk33</groupId>
 			<artifactId>find-me-utility</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+
+		<!-- Spring 注解支持 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 	</dependencies>
 </project>

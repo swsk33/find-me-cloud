@@ -24,4 +24,14 @@ spring:
         - id: "image"
           uri: "lb://find-me-image"
           predicates:
-            - Path=/api/image/avatar/**
+            - "Path=/api/image/**"
+        # 会话服务
+        - id: "session"
+          uri: "lb://find-me-session"
+          predicates:
+            - "Path=/api/session/**"
+        # 会话服务-WebSocket
+        - id: "session-ws"
+          uri: "lb:ws://find-me-session"
+          predicates:
+            - "Path=/ws/session/room/{roomId}"
