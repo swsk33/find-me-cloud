@@ -18,18 +18,18 @@ public class AvatarDAOImpl implements AvatarDAO {
 	private GridFsOperations gridFsOperations;
 
 	@Override
-	public void add(InputStream inputStream, String name) {
-		gridFsOperations.store(inputStream, name);
+	public void add(InputStream inputStream, String id) {
+		gridFsOperations.store(inputStream, id);
 	}
 
 	@Override
-	public void delete(String filename) {
-		gridFsOperations.delete(Query.query(GridFsCriteria.whereFilename().is(filename)));
+	public void delete(String id) {
+		gridFsOperations.delete(Query.query(GridFsCriteria.whereFilename().is(id)));
 	}
 
 	@Override
-	public byte[] get(String filename) throws IOException {
-		GridFsResource[] files = gridFsOperations.getResources(filename);
+	public byte[] get(String id) throws IOException {
+		GridFsResource[] files = gridFsOperations.getResources(id);
 		if (files.length == 0) {
 			return null;
 		}

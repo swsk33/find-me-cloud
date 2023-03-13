@@ -1,6 +1,5 @@
 package com.gitee.swsk33.findmeimage.service;
 
-import com.gitee.swsk33.findmeentity.model.Avatar;
 import com.gitee.swsk33.findmeentity.model.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,24 +15,24 @@ public interface AvatarService {
 	/**
 	 * 上传头像
 	 *
-	 * @return 结果，包含头像的基本信息
+	 * @return 结果，包含头像的文件id
 	 */
-	Result<Avatar> upload(MultipartFile file) throws IOException;
+	Result<String> upload(MultipartFile file) throws IOException;
 
 	/**
 	 * 删除头像
 	 *
-	 * @param filename 头像文件名
+	 * @param id 头像文件id
 	 * @return 结果
 	 */
-	Result<Void> delete(String filename);
+	Result<Void> delete(String id);
 
 	/**
 	 * 获取头像
 	 *
-	 * @param filename 头像文件名
+	 * @param id 头像文件id
 	 * @return 结果
 	 */
-	Result<byte[]> get(String filename);
+	Result<byte[]> get(String id);
 
 }

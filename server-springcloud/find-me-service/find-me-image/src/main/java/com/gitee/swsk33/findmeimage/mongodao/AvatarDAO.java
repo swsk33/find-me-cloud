@@ -12,23 +12,23 @@ public interface AvatarDAO {
 	 * 存入头像文件至数库
 	 *
 	 * @param inputStream 头像文件输入流
-	 * @param name        文件名（带扩展名）
+	 * @param id          头像文件id
 	 */
-	void add(InputStream inputStream, String name);
+	void add(InputStream inputStream, String id);
 
 	/**
 	 * 删除头像
 	 *
-	 * @param filename 头像文件名（通常是id+.+格式）
+	 * @param id 头像文件id
 	 */
-	void delete(String filename);
+	void delete(String id);
 
 	/**
 	 * 获取头像文件
 	 *
-	 * @param filename 头像文件名
+	 * @param id 头像文件id
 	 * @return 头像文件数据
 	 */
-	byte[] get(String filename) throws IOException;
+	byte[] get(String id) throws IOException;
 
 }

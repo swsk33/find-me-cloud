@@ -1,6 +1,5 @@
 package com.gitee.swsk33.findmeimage.api;
 
-import com.gitee.swsk33.findmeentity.model.Avatar;
 import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeimage.service.AvatarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,18 @@ public class AvatarAPI {
 	private AvatarService avatarService;
 
 	@PostMapping("/upload")
-	public Result<Avatar> upload(@RequestParam("avatar") MultipartFile file) throws IOException {
+	public Result<String> upload(@RequestParam("avatar") MultipartFile file) throws IOException {
 		return avatarService.upload(file);
 	}
 
-	@DeleteMapping("/delete/{filename}")
-	public Result<Void> delete(@PathVariable String filename) {
-		return avatarService.delete(filename);
+	@DeleteMapping("/delete/{id}")
+	public Result<Void> delete(@PathVariable String id) {
+		return avatarService.delete(id);
 	}
 
-	@GetMapping("/get/{filename}")
-	public byte[] getAvatar(@PathVariable String filename) {
-		Result<byte[]> result = avatarService.get(filename);
+	@GetMapping("/get/{id}")
+	public byte[] getAvatar(@PathVariable String id) {
+		Result<byte[]> result = avatarService.get(id);
 		if (!result.isSuccess()) {
 			return null;
 		}

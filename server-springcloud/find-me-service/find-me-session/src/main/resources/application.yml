@@ -17,10 +17,21 @@ spring:
     # Nacos注册中心
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: "127.0.0.1:8848"
   # Redis
   data:
     redis:
       host: "127.0.0.1"
       port: 6379
-      password: "password"
+  #      password: "密码"
+  # Kafka
+  kafka:
+    bootstrap-servers: "127.0.0.1:9092"
+    producer:
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+    consumer:
+      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
+      properties:
+        "[spring.json.trusted.packages]": "*"

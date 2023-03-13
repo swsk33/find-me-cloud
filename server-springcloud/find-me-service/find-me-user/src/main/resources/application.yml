@@ -17,9 +17,9 @@ spring:
     # Nacos注册中心
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-  # MongoDB配置
+        server-addr: "127.0.0.1:8848"
   data:
+    # MongoDB配置
     mongodb:
       host: "127.0.0.1"
       port: 27017
@@ -27,3 +27,8 @@ spring:
       #      username: "用户名"
       #      password: "密码"
       authentication-database: "admin"
+    # Redis配置
+    redis:
+      host: "127.0.0.1"
+      port: 6379
+#      password: "密码"

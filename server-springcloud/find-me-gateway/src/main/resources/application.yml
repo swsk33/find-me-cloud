@@ -12,7 +12,7 @@ spring:
     # Nacos配置
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: "127.0.0.1:8848"
     # 注册到注册中心
     gateway:
       discovery:
@@ -35,3 +35,8 @@ spring:
           uri: "lb:ws://find-me-session"
           predicates:
             - "Path=/ws/session/room/{roomId}"
+        # 用户服务
+        - id: "user"
+          uri: "lb://find-me-user"
+          predicates:
+            - "Path=/api/user/**"

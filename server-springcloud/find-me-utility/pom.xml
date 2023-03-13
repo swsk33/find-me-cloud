@@ -16,5 +16,11 @@
 			<artifactId>hutool-all</artifactId>
 			<version>5.8.15</version>
 		</dependency>
+
+		<!-- MongoDB（用于获取其中的类） -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+		</dependency>
 	</dependencies>
 </project>
