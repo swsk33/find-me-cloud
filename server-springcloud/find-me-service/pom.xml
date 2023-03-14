@@ -30,6 +30,14 @@
 			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
 		</dependency>
 
+		<!-- Lombok代码简化 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.26</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<!-- 实体类 -->
 		<dependency>
 			<groupId>com.gitee.swsk33</groupId>

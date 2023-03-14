@@ -22,5 +22,12 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 		</dependency>
+
+		<!-- 实体类 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-entity</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -13,6 +13,18 @@ spring:
   # 应用程序名
   application:
     name: find-me-user
+  # 邮箱配置
+  mail:
+    host: "smtp.163.com"
+    username: ""
+    password: ""
+    default-encoding: "UTF-8"
+    properties:
+      "[mail.smtp.socketFactory.class]": "javax.net.ssl.SSLSocketFactory"
+      "[mail.smtp.socketFactory.port]": 465
+      "[mail.smtp.auth]": true
+      "[mail.smtp.starttls.enable]": true
+      "[mail.smtp.starttls.required]": true
   cloud:
     # Consul配置
     consul:

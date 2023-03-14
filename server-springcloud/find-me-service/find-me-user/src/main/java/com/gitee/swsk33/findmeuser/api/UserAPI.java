@@ -1,6 +1,7 @@
 package com.gitee.swsk33.findmeuser.api;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.factory.ResultFactory;
 import com.gitee.swsk33.findmeentity.model.Result;
@@ -41,6 +42,15 @@ public class UserAPI {
 			return ResultFactory.createFailedResult(result.getFieldError().getDefaultMessage());
 		}
 		return userService.update(user);
+	}
+
+	@PutMapping("/reset-password/{code}")
+	public Result<Void> resetPassword(@PathVariable int code, @RequestBody User user) {
+		// 传入的user中需要email字段和password字段不为空，password表示新的密码
+		if (user == null || StrUtil.isEmpty(user.getEmail()) || StrUtil.isEmpty(user.getPassword())) {
+			return ResultFactory.createFailedResult("邮箱或者新密码不能为空！");
+		}
+		return userService.resetPassword(user.getEmail(), code, user.getPassword());
 	}
 
 	/**

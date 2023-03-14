@@ -14,7 +14,7 @@ public interface UserDAO {
 	void add(User user);
 
 	/**
-	 * 修改一个用户信息
+	 * 修改一个用户信息（根据id修改）
 	 *
 	 * @param user 传入新的用户对象
 	 */

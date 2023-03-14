@@ -6,8 +6,11 @@ import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.factory.ResultFactory;
 import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeentity.param.CommonValue;
+import com.gitee.swsk33.findmeentity.param.EmailType;
 import com.gitee.swsk33.findmefeign.feignclient.AvatarClient;
+import com.gitee.swsk33.findmeuser.cache.EmailCodeCache;
 import com.gitee.swsk33.findmeuser.mongodao.UserDAO;
+import com.gitee.swsk33.findmeuser.service.EmailService;
 import com.gitee.swsk33.findmeuser.service.UserService;
 import com.gitee.swsk33.findmeutility.BCryptUtils;
 import com.gitee.swsk33.findmeutility.IDGenerator;
@@ -22,6 +25,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private AvatarClient avatarClient;
+
+	@Autowired
+	private EmailCodeCache emailCodeCache;
+
+	@Autowired
+	private EmailService emailService;
 
 	@Override
 	public Result<Void> register(User user) {
@@ -86,6 +95,26 @@ public class UserServiceImpl implements UserService {
 		// 刷新session
 		StpUtil.getSession().set(CommonValue.SA_USER_SESSION_INFO_KEY, userDAO.getById(user.getId()));
 		return ResultFactory.createVoidSuccessResult("修改用户信息成功！");
+	}
+
+	@Override
+	public Result<Void> resetPassword(String email, int code, String password) {
+		User getUser = userDAO.getByUsernameOrEmail(email);
+		if (getUser == null) {
+			return ResultFactory.createFailedResult("该邮箱未被注册！");
+		}
+		// 校验验证码
+		if (!emailCodeCache.checkCodeInCache(email, EmailType.PASSWORD_RESET, code)) {
+			return ResultFactory.createFailedResult("验证码错误！");
+		}
+		// 重置密码
+		User user = new User();
+		user.setId(getUser.getId());
+		user.setPassword(BCryptUtils.encode(password));
+		userDAO.update(user);
+		// 通知用户
+		emailService.sendTextEmail(getUser.getEmail(), "FindMe - 密码重置", "您的密码已经重置成功！请牢记您的新密码！");
+		return ResultFactory.createVoidSuccessResult("重置密码成功！");
 	}
 
 }

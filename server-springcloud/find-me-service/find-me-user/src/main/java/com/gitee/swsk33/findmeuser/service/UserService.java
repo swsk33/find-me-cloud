@@ -34,4 +34,14 @@ public interface UserService {
 	 */
 	Result<Void> update(User user);
 
+	/**
+	 * 重置密码
+	 *
+	 * @param email    要重置密码的用户邮箱（先调用发送密码重置验证码接口）
+	 * @param code     验证码
+	 * @param password 新密码
+	 * @return 结果
+	 */
+	Result<Void> resetPassword(String email, int code, String password);
+
 }
