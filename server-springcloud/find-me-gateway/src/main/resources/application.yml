@@ -8,6 +8,12 @@ server:
 spring:
   application:
     name: find-me-gateway
+  # Redis
+  data:
+    redis:
+      host: "127.0.0.1"
+      port: 6379
+  #      password: "密码"
   cloud:
     # Consul配置
     consul:
@@ -38,7 +44,7 @@ spring:
         - id: "session-ws"
           uri: "lb:ws://find-me-session"
           predicates:
-            - "Path=/ws/session/room/{roomId}"
+            - "Path=/ws/session/**"
         # 用户服务
         - id: "user"
           uri: "lb://find-me-user"

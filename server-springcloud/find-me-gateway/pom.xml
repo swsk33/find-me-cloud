@@ -23,6 +23,18 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
 		</dependency>
+
+		<!-- Sa-Token网关集成鉴权 -->
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+		</dependency>
+
+		<!-- Sa-Token整合Redis（使用jackson序列化方式） -->
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-dao-redis-jackson</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
