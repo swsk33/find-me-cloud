@@ -20,7 +20,6 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring-cloud.version>2022.0.1</spring-cloud.version>
-		<spring-cloud-alibaba.version>2022.0.0.0-RC1</spring-cloud-alibaba.version>
 		<skipTests>true</skipTests>
 	</properties>
 
@@ -34,23 +33,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
-			<!-- Spring Cloud Alibaba 版本管理 -->
-			<dependency>
-				<groupId>com.alibaba.cloud</groupId>
-				<artifactId>spring-cloud-alibaba-dependencies</artifactId>
-				<version>${spring-cloud-alibaba.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<modules>
+		<module>find-me-gateway</module>
 		<module>find-me-service</module>
 		<module>find-me-entity</module>
 		<module>find-me-feign</module>
-		<module>find-me-gateway</module>
 		<module>find-me-utility</module>
 	</modules>
 </project>

@@ -14,10 +14,14 @@ spring:
   application:
     name: find-me-image
   cloud:
-    # Nacos配置
-    nacos:
+    # Consul配置
+    consul:
+      host: "127.0.0.1"
+      port: 8500
       discovery:
-        server-addr: "127.0.0.1:8848"
+        service-name: ${spring.application.name}
+        heartbeat:
+          enabled: true
   # MongoDB配置
   data:
     mongodb:
