@@ -77,8 +77,7 @@ public class UserServiceImpl implements UserService {
 			return ResultFactory.createFailedResult("用户不存在！");
 		}
 		// 判断是否是在修改自己而不是别人
-		User sessionUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
-		if (sessionUser != null && user.getId().longValue() != sessionUser.getId().longValue()) {
+		if (user.getId() != StpUtil.getLoginIdAsLong()) {
 			return ResultFactory.createFailedResult("您不能修改其他用户信息！");
 		}
 		// 如果用户的密码被修改则加密一下

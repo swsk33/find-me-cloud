@@ -75,4 +75,19 @@ public class UserAPI {
 		return ResultFactory.createVoidSuccessResult("退出登录成功！");
 	}
 
+	/**
+	 * 判断指定id的用户是否登录（用于远程调用）
+	 *
+	 * @param id 用户id
+	 * @return 结果，如果登录会返回该用户信息
+	 */
+	@GetMapping("/is-login-id/{id}")
+	public Result<User> isLoginById(@PathVariable long id) {
+		User getUser = (User) StpUtil.getSessionByLoginId(id).get(CommonValue.SA_USER_SESSION_INFO_KEY);
+		if (getUser == null) {
+			return ResultFactory.createFailedResult("用户未登录！");
+		}
+		return ResultFactory.createSuccessResult("用户已登录！", getUser);
+	}
+
 }

@@ -43,6 +43,13 @@
 			<artifactId>redisson-spring-boot-starter</artifactId>
 			<version>3.20.0</version>
 		</dependency>
+
+		<!-- 远程调用层 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-feign</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

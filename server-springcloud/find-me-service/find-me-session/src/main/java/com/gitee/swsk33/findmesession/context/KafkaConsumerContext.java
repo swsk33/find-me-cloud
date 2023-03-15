@@ -1,6 +1,8 @@
 package com.gitee.swsk33.findmesession.context;
 
+import com.alibaba.fastjson2.JSON;
 import com.gitee.swsk33.findmeentity.model.Message;
+import com.gitee.swsk33.findmeentity.model.Position;
 import com.gitee.swsk33.findmesession.factory.KafkaDynamicConsumerFactory;
 import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -50,16 +52,21 @@ public class KafkaConsumerContext {
 	 * @param userId  推送用户id
 	 * @param session 用户websocket会话
 	 */
-	public void addConsumerTask(String roomId, long userId, Session session) throws Exception {
+	public synchronized void addConsumerTask(String roomId, long userId, Session session) throws Exception {
 		// 创建消费者
 		KafkaConsumer<String, Message<?>> consumer = kafkaConsumerFactory.createConsumer(roomId, userId);
 		// 创建定时任务，每隔100ms拉取消息并推送给用户
 		ScheduledFuture<?> future = executor.scheduleAtFixedRate(() -> {
-			// 消费者拉取这个房间内共享的地理位置信息
+			// 消费者拉取这个房间内共享的实时消息
 			ConsumerRecords<String, Message<?>> records = consumer.poll(Duration.ofMillis(100));
 			// 推送给用户
 			for (ConsumerRecord<String, Message<?>> record : records) {
-				session.getAsyncRemote().sendObject(record.value());
+				Object data = record.value();
+				// 如果是位置信息，且是自己的位置信息，就不推送给自己，节省流量
+				if (data instanceof Position && userId == ((Position) data).getUser().getId()) {
+					continue;
+				}
+				session.getAsyncRemote().sendObject(JSON.toJSONString(data));
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
 		// 存入任务和消费者以便于后续管理
@@ -73,7 +80,7 @@ public class KafkaConsumerContext {
 	 *
 	 * @param userId 用户id
 	 */
-	public void removeConsumerTask(long userId) {
+	public synchronized void removeConsumerTask(long userId) {
 		if (!consumerMap.containsKey(userId)) {
 			return;
 		}

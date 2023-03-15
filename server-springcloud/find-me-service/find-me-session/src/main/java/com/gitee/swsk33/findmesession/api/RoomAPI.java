@@ -7,10 +7,7 @@ import com.gitee.swsk33.findmesession.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/session/room")
@@ -25,6 +22,11 @@ public class RoomAPI {
 			return ResultFactory.createFailedResult(result.getFieldError().getDefaultMessage());
 		}
 		return roomService.createRoom(room);
+	}
+
+	@GetMapping("/get/{id}")
+	public Result<Room> getRoomById(@PathVariable String id) {
+		return roomService.getRoom(id);
 	}
 
 }

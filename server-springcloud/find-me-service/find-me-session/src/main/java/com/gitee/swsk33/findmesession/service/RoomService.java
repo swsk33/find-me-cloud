@@ -18,4 +18,12 @@ public interface RoomService {
 	 */
 	Result<Room> createRoom(Room room);
 
+	/**
+	 * 根据id获取房间对象
+	 *
+	 * @param id 房间id
+	 * @return 房间对象
+	 */
+	Result<Room> getRoom(String id);
+
 }
