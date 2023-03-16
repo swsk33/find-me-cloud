@@ -17,7 +17,7 @@ public class Message<T> implements Serializable {
 	private MessageType type;
 
 	/**
-	 * 发送者用户id
+	 * 发送者用户id（为0时表示系统消息）
 	 */
 	private long senderId;
 

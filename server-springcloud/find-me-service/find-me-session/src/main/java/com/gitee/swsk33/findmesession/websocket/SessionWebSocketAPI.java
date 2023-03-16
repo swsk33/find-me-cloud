@@ -41,7 +41,7 @@ public class SessionWebSocketAPI {
 	 * 存放所有未认证的会话的定时器
 	 * 键为用户id，值为定时器
 	 */
-	private static final Map<Long, ScheduledFuture<?>> notLoginFutures = new ConcurrentHashMap<>();
+	private static final Map<Long, ScheduledFuture<?>> notLoginSessions = new ConcurrentHashMap<>();
 
 	/**
 	 * 容器上下文，用于在WebSocket类中获取Bean
@@ -63,16 +63,22 @@ public class SessionWebSocketAPI {
 	public static void addAutoExpireSession(Session session, long userId) {
 		ScheduledFuture<?> future = notLoginSessionExecutor.schedule(() -> {
 			try {
+				if (!session.isOpen()) {
+					log.warn("用户id：" + userId + "的会话已被关闭！退出定时任务！");
+					// 从列表中移除自己
+					notLoginSessions.remove(userId);
+					return;
+				}
 				session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "认证超时！连接断开！"));
 				session.close();
 				// 从列表中移除自己
-				notLoginFutures.remove(userId);
+				notLoginSessions.remove(userId);
 				log.warn("用户id：" + userId + "的会话过期！");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}, 1, TimeUnit.MINUTES);
-		notLoginFutures.put(userId, future);
+		notLoginSessions.put(userId, future);
 		log.warn("用户id：" + userId + "的会话目前为未认证会话！1分钟后过期！");
 	}
 
@@ -82,7 +88,7 @@ public class SessionWebSocketAPI {
 	 * @param userId 会话对应的用户id
 	 */
 	public static void removeAutoExpireSession(long userId) {
-		ScheduledFuture<?> future = notLoginFutures.remove(userId);
+		ScheduledFuture<?> future = notLoginSessions.remove(userId);
 		future.cancel(true);
 	}
 
@@ -100,7 +106,7 @@ public class SessionWebSocketAPI {
 	 * 连接关闭调用的方法
 	 */
 	@OnClose
-	public void onClose(Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) throws IOException {
+	public void onClose(Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) {
 		log.info("用户(id:" + userId + ")断开连接！");
 		// 移除对应的kafka消费者
 		// 使用Spring上下文容器手动获取Bean，下面也一样
@@ -124,6 +130,11 @@ public class SessionWebSocketAPI {
 	public void onMessage(String message, Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) throws Exception {
 		// 反序列化
 		Message<?> messageObject = JacksonMapper.getMapper().readValue(message, Message.class);
+		// 拦截未认证会话的非认证消息
+		if (notLoginSessions.containsKey(userId) && messageObject.getType() != MessageType.AUTH) {
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "未认证！"));
+			return;
+		}
 		// 传入消息策略处理器
 		RealTimeMessageContext realTimeMessageContext = applicationContext.getBean(RealTimeMessageContext.class);
 		realTimeMessageContext.handleMessage(messageObject, session, roomId, userId);

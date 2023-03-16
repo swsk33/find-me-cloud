@@ -1,5 +1,6 @@
 package com.gitee.swsk33.findmesession.context;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmesession.factory.KafkaDynamicConsumerFactory;
 import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
@@ -69,28 +70,22 @@ public class KafkaConsumerContext {
 				log.info("已移除用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
 				return;
 			}
-			// 消费者拉取这个房间内共享的实时消息
-			ConsumerRecords<String, Message<?>> records = null;
 			try {
-				records = consumer.poll(Duration.ofMillis(100));
-			} catch (Exception e) {
-				log.error("Kafka消费者(用户id：" + userId + ")拉取消息发生错误！");
-				e.printStackTrace();
-			}
-			// 推送给用户
-			for (ConsumerRecord<String, Message<?>> record : records) {
-				Message<?> data = record.value();
-				// 如果这个消息是自己产生的，则不在发送回给自己以节省流量
-				if (data.getSenderId() == userId) {
-					continue;
-				}
-				// 序列化消息并返回给用户
-				try {
+				// 消费者拉取这个房间内共享的实时消息
+				ConsumerRecords<String, Message<?>> records = consumer.poll(Duration.ofMillis(100));
+				// 推送给用户
+				for (ConsumerRecord<String, Message<?>> record : records) {
+					Message<?> data = record.value();
+					// 如果这个消息是自己产生的，则不在发送回给自己以节省流量
+					if (data.getSenderId() == userId) {
+						continue;
+					}
+					// 序列化消息并返回给用户
 					session.getAsyncRemote().sendText(JacksonMapper.getMapper().writeValueAsString(data));
-				} catch (Exception e) {
-					log.error("Kafka消费者(用户id：" + userId + ")序列化消息错误！");
-					e.printStackTrace();
 				}
+			} catch (Exception e) {
+				log.error("Kafka消费者(用户id：" + userId + ")拉取消息或者序列化时发生错误！");
+				e.printStackTrace();
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
 		// 存入任务以便于后续管理

@@ -47,7 +47,6 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 		if (getRoom == null) {
 			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "房间不存在！"));
 			session.close();
-			SessionWebSocketAPI.removeAutoExpireSession(userId);
 			return;
 		}
 		// 比对密码
@@ -56,24 +55,23 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 		if (!BCryptUtils.match(password, getRoom.getPassword())) {
 			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "房间密码错误！"));
 			session.close();
-			SessionWebSocketAPI.removeAutoExpireSession(userId);
 			return;
 		}
 		// 判断用户登录
 		Result<User> getUser = userClient.isLoginById(userId);
 		if (!getUser.isSuccess()) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "用户认证失败！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "用户未登录！认证失败！"));
 			session.close();
 			return;
 		}
-		// 然后成功加入房间
+		// 成功加入房间
 		session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.SUCCESS, "加入房间成功！"));
 		SessionWebSocketAPI.removeAutoExpireSession(userId);
 		log.info("用户id：" + userId + "的会话认证通过！已被确定为持久会话！");
 		// 把用户加入房间
 		roomCache.addUserToRoom(roomId, getUser.getData());
 		// 广播消息-房间改变
-		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, roomCache.getRoom(roomId, true)));
+		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, userId, roomCache.getRoom(roomId, true)));
 		// 与此同时，为该用户创建一个专用的kafka消费者用于接受该房间内其他用户信息
 		kafkaConsumerContext.addConsumerTask(roomId, userId, session);
 		log.info("用户：" + getUser.getData().getNickname() + "成功加入房间！");

@@ -48,3 +48,11 @@ spring:
       host: "127.0.0.1"
       port: 6379
 #      password: "密码"
+
+# Sa-Token配置
+sa-token:
+  token-name: "findme-satoken"
+  is-concurrent: false
+  is-share: true
+  token-style: simple-uuid
+  is-log: false
