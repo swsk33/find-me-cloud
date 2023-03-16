@@ -30,13 +30,6 @@
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
-		<!-- FastJSON2 -->
-		<dependency>
-			<groupId>com.alibaba.fastjson2</groupId>
-			<artifactId>fastjson2</artifactId>
-			<version>2.0.25</version>
-		</dependency>
-
 		<!-- Redisson分布式功能支持 -->
 		<dependency>
 			<groupId>org.redisson</groupId>

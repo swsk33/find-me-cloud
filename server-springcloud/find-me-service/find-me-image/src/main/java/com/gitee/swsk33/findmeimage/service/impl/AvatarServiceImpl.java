@@ -4,7 +4,7 @@ import com.gitee.swsk33.findmeentity.factory.ResultFactory;
 import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeimage.mongodao.AvatarDAO;
 import com.gitee.swsk33.findmeimage.service.AvatarService;
-import com.gitee.swsk33.findmeutility.IDGenerator;
+import com.gitee.swsk33.findmeutility.util.IDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

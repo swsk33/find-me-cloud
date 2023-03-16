@@ -1,4 +1,4 @@
-package com.gitee.swsk33.findmeutility;
+package com.gitee.swsk33.findmeutility.util;
 
 /**
  * Kafka名称（groupId或者topic名字）生成器

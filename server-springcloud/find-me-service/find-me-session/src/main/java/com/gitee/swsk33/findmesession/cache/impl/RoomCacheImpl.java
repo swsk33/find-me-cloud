@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.gitee.swsk33.findmeutility.RedisKeyGenerator.generateRoomKey;
+import static com.gitee.swsk33.findmeutility.util.RedisKeyGenerator.generateRoomKey;
 
 @Slf4j
 @Component

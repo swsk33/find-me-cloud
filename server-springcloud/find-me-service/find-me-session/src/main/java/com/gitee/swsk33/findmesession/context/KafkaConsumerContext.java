@@ -1,9 +1,8 @@
 package com.gitee.swsk33.findmesession.context;
 
-import com.alibaba.fastjson2.JSON;
 import com.gitee.swsk33.findmeentity.model.Message;
-import com.gitee.swsk33.findmeentity.model.Position;
 import com.gitee.swsk33.findmesession.factory.KafkaDynamicConsumerFactory;
+import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
 import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -55,22 +54,46 @@ public class KafkaConsumerContext {
 	public synchronized void addConsumerTask(String roomId, long userId, Session session) throws Exception {
 		// 创建消费者
 		KafkaConsumer<String, Message<?>> consumer = kafkaConsumerFactory.createConsumer(roomId, userId);
+		// 存入消费者以便于后续管理
+		consumerMap.put(userId, consumer);
 		// 创建定时任务，每隔100ms拉取消息并推送给用户
 		ScheduledFuture<?> future = executor.scheduleAtFixedRate(() -> {
+			// 每次执行之前检查订阅者是否已经被取消（不存在于订阅者列表中则说明并取消）
+			// 由于Kafka消费者非线程安全，所以将取消订阅逻辑和拉取消息逻辑一起放定时器中，判断列表中是否存在消费者而确定是否取消订阅并关闭任务
+			if (!consumerMap.containsKey(userId)) {
+				// 取消订阅
+				consumer.unsubscribe();
+				consumer.close();
+				// 关闭定时任务
+				scheduleMap.remove(userId).cancel(true);
+				log.info("已移除用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
+				return;
+			}
 			// 消费者拉取这个房间内共享的实时消息
-			ConsumerRecords<String, Message<?>> records = consumer.poll(Duration.ofMillis(100));
+			ConsumerRecords<String, Message<?>> records = null;
+			try {
+				records = consumer.poll(Duration.ofMillis(100));
+			} catch (Exception e) {
+				log.error("Kafka消费者(用户id：" + userId + ")拉取消息发生错误！");
+				e.printStackTrace();
+			}
 			// 推送给用户
 			for (ConsumerRecord<String, Message<?>> record : records) {
-				Object data = record.value();
-				// 如果是位置信息，且是自己的位置信息，就不推送给自己，节省流量
-				if (data instanceof Position && userId == ((Position) data).getUser().getId()) {
+				Message<?> data = record.value();
+				// 如果这个消息是自己产生的，则不在发送回给自己以节省流量
+				if (data.getSenderId() == userId) {
 					continue;
 				}
-				session.getAsyncRemote().sendObject(JSON.toJSONString(data));
+				// 序列化消息并返回给用户
+				try {
+					session.getAsyncRemote().sendText(JacksonMapper.getMapper().writeValueAsString(data));
+				} catch (Exception e) {
+					log.error("Kafka消费者(用户id：" + userId + ")序列化消息错误！");
+					e.printStackTrace();
+				}
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
-		// 存入任务和消费者以便于后续管理
-		consumerMap.put(userId, consumer);
+		// 存入任务以便于后续管理
 		scheduleMap.put(userId, future);
 		log.info("已创建用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
 	}
@@ -84,15 +107,8 @@ public class KafkaConsumerContext {
 		if (!consumerMap.containsKey(userId)) {
 			return;
 		}
-		// 取出对应的消费者与任务，并停止
-		KafkaConsumer<String, Message<?>> consumer = consumerMap.get(userId);
-		ScheduledFuture<?> future = scheduleMap.get(userId);
-		consumer.close();
-		future.cancel(true);
-		// 移除列表中的消费者和任务
+		// 移除对应的消费者
 		consumerMap.remove(userId);
-		scheduleMap.remove(userId);
-		log.info("已移除用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
 	}
 
 }

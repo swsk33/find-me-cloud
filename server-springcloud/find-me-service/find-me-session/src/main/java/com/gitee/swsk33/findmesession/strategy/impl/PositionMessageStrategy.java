@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.gitee.swsk33.findmeutility.KafkaNameGenerator.generateName;
+import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
 /**
  * 实时位置改变的消息策略

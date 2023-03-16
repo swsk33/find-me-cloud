@@ -11,7 +11,8 @@ import com.gitee.swsk33.findmesession.cache.RoomCache;
 import com.gitee.swsk33.findmesession.context.KafkaConsumerContext;
 import com.gitee.swsk33.findmesession.strategy.RealTimeMessageStrategy;
 import com.gitee.swsk33.findmesession.websocket.SessionWebSocketAPI;
-import com.gitee.swsk33.findmeutility.BCryptUtils;
+import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
+import com.gitee.swsk33.findmeutility.util.BCryptUtils;
 import jakarta.annotation.Resource;
 import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.gitee.swsk33.findmeutility.KafkaNameGenerator.generateName;
+import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
 /**
  * 认证类型消息处理器（最终加入房间逻辑也包含在此）
@@ -50,7 +51,8 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 			return;
 		}
 		// 比对密码
-		String password = (String) message.getData();
+		// 序列化内容体
+		String password = JacksonMapper.getMapper().convertValue(message.getData(), String.class);
 		if (!BCryptUtils.match(password, getRoom.getPassword())) {
 			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "房间密码错误！"));
 			session.close();

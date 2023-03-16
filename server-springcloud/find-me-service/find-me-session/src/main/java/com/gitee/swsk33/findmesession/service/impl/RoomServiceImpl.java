@@ -5,8 +5,8 @@ import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeentity.model.Room;
 import com.gitee.swsk33.findmesession.cache.RoomCache;
 import com.gitee.swsk33.findmesession.service.RoomService;
-import com.gitee.swsk33.findmeutility.BCryptUtils;
-import com.gitee.swsk33.findmeutility.IDGenerator;
+import com.gitee.swsk33.findmeutility.util.BCryptUtils;
+import com.gitee.swsk33.findmeutility.util.IDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

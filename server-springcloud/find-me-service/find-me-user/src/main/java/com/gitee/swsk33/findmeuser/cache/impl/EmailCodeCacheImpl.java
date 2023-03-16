@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.gitee.swsk33.findmeutility.RedisKeyGenerator.generateMailCodeKey;
+import static com.gitee.swsk33.findmeutility.util.RedisKeyGenerator.generateMailCodeKey;
 
 @Component
 public class EmailCodeCacheImpl implements EmailCodeCache {

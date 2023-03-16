@@ -5,27 +5,27 @@ package com.gitee.swsk33.findmeentity.param;
  */
 public enum MessageType {
 	/**
-	 * 用户位置变化(0)
+	 * 用户位置变化
 	 */
 	POSITION_CHANGED,
 	/**
-	 * 集结点变化(1)
+	 * 集结点变化
 	 */
 	RALLY_CHANGED,
 	/**
-	 * 房间状态改变(2)
+	 * 房间状态改变
 	 */
 	ROOM_CHANGED,
 	/**
-	 * 认证消息(3)
+	 * 认证消息
 	 */
 	AUTH,
 	/**
-	 * 操作成功(4)
+	 * 操作成功
 	 */
 	SUCCESS,
 	/**
-	 * 操作失败(5)
+	 * 操作失败
 	 */
 	FAILED
 }

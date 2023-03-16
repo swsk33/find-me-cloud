@@ -1,4 +1,4 @@
-package com.gitee.swsk33.findmeutility;
+package com.gitee.swsk33.findmeutility.util;
 
 import com.gitee.swsk33.findmeentity.param.EmailType;
 

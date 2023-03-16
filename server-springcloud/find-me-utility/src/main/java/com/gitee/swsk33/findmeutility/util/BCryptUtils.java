@@ -1,4 +1,4 @@
-package com.gitee.swsk33.findmeutility;
+package com.gitee.swsk33.findmeutility.util;
 
 import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.crypto.digest.DigestUtil;

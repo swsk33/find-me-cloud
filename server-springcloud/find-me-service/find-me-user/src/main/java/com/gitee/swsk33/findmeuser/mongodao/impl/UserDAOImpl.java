@@ -2,7 +2,7 @@ package com.gitee.swsk33.findmeuser.mongodao.impl;
 
 import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeuser.mongodao.UserDAO;
-import com.gitee.swsk33.findmeutility.MongoUtils;
+import com.gitee.swsk33.findmeutility.util.MongoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

@@ -17,6 +17,11 @@ public class Message<T> implements Serializable {
 	private MessageType type;
 
 	/**
+	 * 发送者用户id
+	 */
+	private long senderId;
+
+	/**
 	 * 消息内容
 	 */
 	private T data;

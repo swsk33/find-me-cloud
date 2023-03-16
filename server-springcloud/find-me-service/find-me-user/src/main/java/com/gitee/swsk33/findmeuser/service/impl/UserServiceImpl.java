@@ -12,8 +12,8 @@ import com.gitee.swsk33.findmeuser.cache.EmailCodeCache;
 import com.gitee.swsk33.findmeuser.mongodao.UserDAO;
 import com.gitee.swsk33.findmeuser.service.EmailService;
 import com.gitee.swsk33.findmeuser.service.UserService;
-import com.gitee.swsk33.findmeutility.BCryptUtils;
-import com.gitee.swsk33.findmeutility.IDGenerator;
+import com.gitee.swsk33.findmeutility.util.BCryptUtils;
+import com.gitee.swsk33.findmeutility.util.IDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -79,6 +79,14 @@ public class UserServiceImpl implements UserService {
 		// 判断是否是在修改自己而不是别人
 		if (user.getId() != StpUtil.getLoginIdAsLong()) {
 			return ResultFactory.createFailedResult("您不能修改其他用户信息！");
+		}
+		// 判断修改的用户名是否被占用
+		if (user.getUsername() != null && userDAO.getByUsernameOrEmail(user.getUsername()) != null) {
+			return ResultFactory.createFailedResult("用户名被占用！");
+		}
+		// 判断修改的邮箱是否被占用
+		if (user.getEmail() != null && userDAO.getByUsernameOrEmail(user.getEmail()) != null) {
+			return ResultFactory.createFailedResult("邮箱被占用！");
 		}
 		// 如果用户的密码被修改则加密一下
 		if (!StrUtil.isEmpty(user.getPassword())) {

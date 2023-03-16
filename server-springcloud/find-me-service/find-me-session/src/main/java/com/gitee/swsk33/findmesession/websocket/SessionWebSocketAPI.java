@@ -1,14 +1,14 @@
 package com.gitee.swsk33.findmesession.websocket;
 
-import com.alibaba.fastjson2.JSON;
 import com.gitee.swsk33.findmeentity.factory.MessageFactory;
 import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmeentity.model.Room;
 import com.gitee.swsk33.findmeentity.param.MessageType;
 import com.gitee.swsk33.findmesession.cache.RoomCache;
 import com.gitee.swsk33.findmesession.context.KafkaConsumerContext;
-import com.gitee.swsk33.findmesession.encoder.MessageWebSocketEncoder;
+import com.gitee.swsk33.findmesession.encoder.MessageEncoder;
 import com.gitee.swsk33.findmesession.strategy.context.RealTimeMessageContext;
+import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import static com.gitee.swsk33.findmeutility.KafkaNameGenerator.generateName;
+import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
 /**
  * 会话WebSocket接口
  */
 @Component
-@ServerEndpoint(value = "/ws/session/room/{roomId}/{userId}", encoders = MessageWebSocketEncoder.class)
+@ServerEndpoint(value = "/ws/session/room/{roomId}/{userId}", encoders = MessageEncoder.class)
 @Slf4j
 public class SessionWebSocketAPI {
 
@@ -71,9 +71,9 @@ public class SessionWebSocketAPI {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		}, 2, TimeUnit.MINUTES);
+		}, 1, TimeUnit.MINUTES);
 		notLoginFutures.put(userId, future);
-		log.warn("用户id：" + userId + "的会话目前为未认证会话！2分钟后过期！");
+		log.warn("用户id：" + userId + "的会话目前为未认证会话！1分钟后过期！");
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class SessionWebSocketAPI {
 	@OnMessage
 	public void onMessage(String message, Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) throws Exception {
 		// 反序列化
-		Message<?> messageObject = JSON.parseObject(message, Message.class);
+		Message<?> messageObject = JacksonMapper.getMapper().readValue(message, Message.class);
 		// 传入消息策略处理器
 		RealTimeMessageContext realTimeMessageContext = applicationContext.getBean(RealTimeMessageContext.class);
 		realTimeMessageContext.handleMessage(messageObject, session, roomId, userId);

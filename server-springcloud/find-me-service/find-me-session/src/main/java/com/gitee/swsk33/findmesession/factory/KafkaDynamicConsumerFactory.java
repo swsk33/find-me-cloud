@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.Properties;
 
-import static com.gitee.swsk33.findmeutility.KafkaNameGenerator.generateName;
+import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
 @Component
 public class KafkaDynamicConsumerFactory {
@@ -40,6 +40,8 @@ public class KafkaDynamicConsumerFactory {
 		// 设定反序列化方式
 		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, Class.forName(keyDeSerializerClassName));
 		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, Class.forName(valueDeSerializerClassName));
+		// 信任所有类以反序列化
+		consumerProperties.put("spring.json.trusted.packages", "*");
 		// 新建一个消费者
 		KafkaConsumer<K, V> consumer = new KafkaConsumer<>(consumerProperties);
 		// 使这个消费者订阅对应话题

@@ -1,7 +1,6 @@
 package com.gitee.swsk33.findmeentity.model;
 
 
-import com.gitee.swsk33.findmeentity.dataobject.User;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,11 +10,6 @@ import java.io.Serializable;
  */
 @Data
 public class Position implements Serializable {
-
-	/**
-	 * 该位置信息关联的用户
-	 */
-	private User user;
 
 	/**
 	 * 经度
