@@ -7,9 +7,9 @@ export const useLocationStore = defineStore('locationStore', {
 	state() {
 		return {
 			/**
-			 * 定位器，用于执行定位操作
+			 * 定位器实例
 			 */
-			locationHandler: undefined,
+			geolocation: new BMap.Geolocation(),
 			/**
 			 * 用户定位功能是否可用
 			 */
@@ -29,38 +29,42 @@ export const useLocationStore = defineStore('locationStore', {
 				/**
 				 * 海拔（米）
 				 */
-				elevation: 10,
+				elevation: undefined,
 				/**
 				 * 朝向（度）
+				 * 0表示正北，左转增加，最大360
 				 */
-				orientation: 0
+				orientation: undefined
 			}
 		};
 	},
 	actions: {
 		/**
-		 * 执行定位操作
-		 * @param {boolean} showTip 如果发生错误，是否弹出提示
-		 * @param {boolean} zoomToUser 定位成功后，是否聚焦到用户
+		 * 将经纬度转换为百度地图点对象
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @return {Object} 百度地图点对象
+		 */
+		toBMapPoint(longitude, latitude) {
+			return new BMap.Point(longitude, latitude);
+		},
+		/**
+		 * 用户定位
 		 */
 		getUserPosition(showTip = false, zoomToUser = false) {
-			this.locationHandler.getCurrentPosition((status, result) => {
-				// 定位失败则退出
-				if (status !== 'complete') {
+			this.geolocation.getCurrentPosition((result) => {
+				if (this.geolocation.getStatus() !== BMAP_STATUS_SUCCESS) {
 					if (showTip) {
-						showMessage('定位失败！请检查手机和浏览器定位功能是否打开，以及是否给予浏览器定位权限！', MESSAGE_TYPE.error);
-						this.positionEnabled = false;
+						showMessage('获取定位失败！请检查定位功能是否打开！以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
 					}
 					return;
 				}
-				// 定位成功操作
-				this.positionEnabled = true;
-				this.position.longitude = result.position.getLng();
-				this.position.latitude = result.position.getLat();
-				// 缩放到用户
-				const mapStore = useMapStore();
+				this.position.longitude = result.point.lng;
+				this.position.latitude = result.point.lat;
 				if (zoomToUser) {
-					mapStore.map.setZoomAndCenter(16, [this.position.longitude, this.position.latitude]);
+					const mapStore = useMapStore();
+					mapStore.map.panTo(this.toBMapPoint(this.position.longitude, this.position.latitude));
+					mapStore.map.setZoom(17);
 				}
 			});
 		}

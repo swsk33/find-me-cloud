@@ -2,23 +2,40 @@
 	<div class="map">
 		<div id="map-container"></div>
 		<Location class="location-button" @click="locationStore.getUserPosition(true, true)"/>
+		<div class="user-marker-container">
+			<UserMarker class="marker my-self" :avatar="userStore.getUserAvatarURL()"/>
+		</div>
 	</div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useMapStore } from '../../stores/map';
 import { useLocationStore } from '../../stores/location';
+import { useUserStore } from '../../stores/user';
+import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
+import UserMarker from './components/UserMarker.vue';
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
+const userStore = useUserStore();
 
-onMounted(async () => {
+// 响应式位置信息
+const WGS84Coordinates = useGeolocation().coords;
+
+watch(WGS84Coordinates, () => {
+	// 实时赋值高度变化
+	locationStore.position.elevation = WGS84Coordinates.value.altitude;
+});
+
+onMounted(() => {
 	// 初始化地图
-	await mapStore.initMap('map-container');
-	// 执行一次定位
+	mapStore.initMap('map-container');
+	// 初次定位
 	locationStore.getUserPosition(true, true);
+	// 添加陀螺仪朝向信息（响应式）
+	locationStore.position.orientation = useDeviceOrientation().alpha;
 });
 </script>
 
@@ -34,6 +51,12 @@ onMounted(async () => {
 		position: absolute;
 		left: 5%;
 		bottom: 6%;
+	}
+
+	.user-marker-container {
+		position: absolute;
+		height: 0;
+		width: 0;
 	}
 }
 </style>

@@ -32,7 +32,7 @@ export const useUserStore = defineStore('userStore', {
 		 * @param user 用户对象
 		 * @returns {string} 头像URL
 		 */
-		getUserAvatarURL(user) {
+		getUserAvatarURL(user = this.userData) {
 			if (user == null || user.avatarId === undefined) {
 				return defaultAvatar;
 			}
