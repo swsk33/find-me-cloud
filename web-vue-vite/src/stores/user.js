@@ -1,7 +1,7 @@
 // 用户状态
 import { defineStore } from 'pinia';
 import { REQUEST_METHOD, sendRequest } from '../utils/request';
-import defaultAvatar from '../assets/default-avatar.jpg';
+import defaultAvatar from '../assets/avatar/default-avatar.jpg';
 
 export const useUserStore = defineStore('userStore', {
 	state() {

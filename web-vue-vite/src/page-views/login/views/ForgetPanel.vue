@@ -44,6 +44,7 @@ const userData = reactive({
  * 发送验证码
  */
 const sendCode = async () => {
+	// 值校验
 	if (userData.email === '' || userData.email == null) {
 		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
@@ -74,6 +75,11 @@ const sendCode = async () => {
  * 重置密码请求
  */
 const doReset = async () => {
+	// 值校验
+	if (code.value === '' || code.value == null) {
+		showNotification('错误', '验证码不能为空！', MESSAGE_TYPE.error);
+		return;
+	}
 	const response = await sendRequest('/api/user/common/reset-password/' + code.value, REQUEST_METHOD.PUT, userData);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
