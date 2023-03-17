@@ -4,7 +4,21 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+import { onBeforeMount } from 'vue';
+import { useUserStore } from './stores/user';
 
+const router = useRouter();
+const userStore = useUserStore();
+
+// 检测用户是否登录
+onBeforeMount(async () => {
+	await userStore.checkLogin();
+	if (!userStore.isLogin) {
+		// 未登录跳转到登录页
+		await router.push('/login');
+	}
+});
 </script>
 
 <style lang="scss" scoped>

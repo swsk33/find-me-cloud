@@ -50,3 +50,11 @@ spring:
           uri: "lb://find-me-user"
           predicates:
             - "Path=/api/user/**"
+
+# Sa-Token配置
+sa-token:
+  token-name: "findme-satoken"
+  is-concurrent: false
+  is-share: true
+  token-style: simple-uuid
+  is-log: false

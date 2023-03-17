@@ -8,7 +8,7 @@
 			<el-input class="input" v-model="userData.email" :prefix-icon="Message" placeholder="邮箱"/>
 		</div>
 		<div class="button-box">
-			<el-button class="button" type="success">注册</el-button>
+			<el-button class="button" type="success" @click="register">注册</el-button>
 			<el-button class="button" type="primary" @click="router.push('/login')">返回</el-button>
 		</div>
 	</div>
@@ -18,6 +18,8 @@
 import { reactive } from 'vue';
 import { User, Watermelon, Lock, Message } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
 
 const router = useRouter();
 
@@ -28,6 +30,19 @@ const userData = reactive({
 	password: undefined,
 	email: undefined
 });
+
+/**
+ * 用户注册方法
+ */
+const register = async () => {
+	const response = await sendRequest('/api/user/common/register', REQUEST_METHOD.POST, userData);
+	if (!response.success) {
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showNotification('成功', '注册成功！请登录！');
+	await router.push('/login');
+};
 </script>
 
 <style lang="scss" scoped>

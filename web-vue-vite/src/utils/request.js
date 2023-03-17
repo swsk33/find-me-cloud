@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+/**
+ * 请求类型
+ */
 const REQUEST_METHOD = {
 	GET: 'GET',
 	POST: 'POST',
@@ -33,6 +36,7 @@ async function sendRequest(url, method, data = undefined) {
 		return response.data;
 	} catch (error) {
 		console.log(error.response.data);
+		return { success: false, message: '请求发生错误！' };
 	}
 }
 

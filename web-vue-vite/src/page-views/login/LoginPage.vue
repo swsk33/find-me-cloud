@@ -7,6 +7,19 @@
 
 <script setup>
 import 'animate.css';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '../../stores/user';
+import { onBeforeMount } from 'vue';
+
+const router = useRouter();
+const userStore = useUserStore();
+
+onBeforeMount(async () => {
+	if (userStore.isLogin) {
+		// 已登录跳转到主页
+		await router.push('/');
+	}
+});
 </script>
 
 <style lang="scss" scoped>

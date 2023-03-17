@@ -6,7 +6,7 @@
 			<el-input class="input" size="large" v-model="userData.password" :prefix-icon="Lock" placeholder="密码" show-password/>
 		</div>
 		<div class="button-box">
-			<el-button class="button" type="success">登录</el-button>
+			<el-button class="button" type="success" @click="login">登录</el-button>
 			<el-button class="button" type="primary" @click="router.push('/login/register')">注册</el-button>
 		</div>
 		<el-button class="forget-button" type="danger" size="small" @click="router.push('/login/forget')">忘记密码</el-button>
@@ -18,14 +18,33 @@ import { reactive } from 'vue';
 import { User, Lock } from '@element-plus/icons-vue';
 
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../../../stores/user';
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
 
 const router = useRouter();
+const userStore = useUserStore();
 
 // 用户登录数据
 const userData = reactive({
 	username: undefined,
 	password: undefined
 });
+
+/**
+ * 用户登录
+ */
+const login = async () => {
+	const response = await sendRequest('/api/user/common/login', REQUEST_METHOD.POST, userData);
+	if (!response.success) {
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showNotification('成功', '登录成功！');
+	// 拉取用户信息
+	await userStore.checkLogin();
+	await router.push('/');
+};
 </script>
 
 <style lang="scss" scoped>

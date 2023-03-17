@@ -26,7 +26,7 @@ public class SaTokenConfigure {
 					SaRouter.match("/**", result -> StpUtil.checkLogin());
 				}).setError(e -> {
 					SaHolder.getResponse().setHeader("Content-Type", "application/json;charset=UTF-8");
-					return "{\"success\":false,\"message\":\"用户未登录！\"}";
+					return "{\"success\":false,\"message\":\"用户没有登录！\"}";
 				});
 	}
 
