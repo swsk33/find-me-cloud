@@ -1,28 +1,52 @@
 <!-- 显示用户的指针标记 -->
 <template>
-	<!-- 形态1：在屏幕范围内时，显示指针本身 -->
-	<div class="user-marker" v-if="status === POINTER_STATUS.IN_SCREEN" :style="{left: (x - 24) + 'px', top: (y - 24) + 'px'}">
-		<div class="marker-base" :style="{transform: 'rotate(' + (360 - pointerData.position.orientation) + 'deg)'}">
-			<div class="circle" :style="{backgroundColor: pointerData.color, boxShadow: pointerData.color + ' 0 0 6px'}">
+	<div class="user-pointer" :style="{left: x + 'px', top: y + 'px'}">
+		<!-- 形态1：在屏幕范围内时，显示指针本身 -->
+		<div class="user-marker" @click="dialogShow = true" v-if="status === POINTER_STATUS.IN_SCREEN">
+			<div class="marker-base" :style="{transform: 'rotate(' + (360 - pointerData.position.orientation) + 'deg)'}">
+				<div class="circle" :style="{backgroundColor: pointerData.color, boxShadow: pointerData.color + ' 0 0 6px'}">
+				</div>
+				<div class="heading" :style="{borderBottomColor: pointerData.color}" v-if="pointerData.position.orientation != null"></div>
 			</div>
-			<div class="heading" :style="{borderBottomColor: pointerData.color}" v-if="pointerData.position.orientation != null"></div>
+			<!-- 高程标识 -->
+			<CaretTop class="height-icon above" v-if="height === HEIGHT_STATUS.ABOVE" :style="{color:pointerData.color}"/>
+			<CaretBottom class="height-icon down" v-if="height === HEIGHT_STATUS.DOWN" :style="{color:pointerData.color}"/>
+			<img class="user-avatar" :src="userStore.getUserAvatarURL(userData)" alt="无法显示"/>
 		</div>
-		<!-- 高程标识 -->
-		<CaretTop class="height-icon above" v-if="height === HEIGHT_STATUS.ABOVE" :style="{color:pointerData.color}"/>
-		<CaretBottom class="height-icon down" v-if="height === HEIGHT_STATUS.DOWN" :style="{color:pointerData.color}"/>
-		<img class="user-avatar" :src="userStore.getUserAvatarURL(userData)" alt="无法显示"/>
-	</div>
-	<!-- 形态2：屏幕范围外时，显示昵称标识 -->
-	<div class="out-pointer" @click="zoomToPointer" v-if="status !== POINTER_STATUS.IN_SCREEN" :style="{color: pointerData.color, left: x + 'px', top: y + 'px'}">
-		<Top v-if="status === POINTER_STATUS.TOP" class="arrow top"/>
-		<Bottom v-if="status === POINTER_STATUS.BOTTOM" class="arrow bottom"/>
-		<Back v-if="status === POINTER_STATUS.LEFT" class="arrow left"/>
-		<Right v-if="status === POINTER_STATUS.RIGHT" class="arrow right"/>
-		<TopLeft v-if="status === POINTER_STATUS.TOP_LEFT" class="arrow top-left"/>
-		<TopRight v-if="status === POINTER_STATUS.TOP_RIGHT" class="arrow top-right"/>
-		<BottomLeft v-if="status === POINTER_STATUS.BOTTOM_LEFT" class="arrow bottom-left"/>
-		<BottomRight v-if="status === POINTER_STATUS.BOTTOM_RIGHT" class="arrow bottom-right"/>
-		<div class="text" :style="{backgroundColor: pointerData.color}" v-if="userData != null">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
+		<!-- 形态2：屏幕范围外时，显示昵称标识 -->
+		<div class="out-pointer" @click="zoomToPointer" v-if="status !== POINTER_STATUS.IN_SCREEN" :style="{color: pointerData.color}">
+			<Top v-if="status === POINTER_STATUS.TOP" class="arrow top"/>
+			<Bottom v-if="status === POINTER_STATUS.BOTTOM" class="arrow bottom"/>
+			<Back v-if="status === POINTER_STATUS.LEFT" class="arrow left"/>
+			<Right v-if="status === POINTER_STATUS.RIGHT" class="arrow right"/>
+			<TopLeft v-if="status === POINTER_STATUS.TOP_LEFT" class="arrow top-left"/>
+			<TopRight v-if="status === POINTER_STATUS.TOP_RIGHT" class="arrow top-right"/>
+			<BottomLeft v-if="status === POINTER_STATUS.BOTTOM_LEFT" class="arrow bottom-left"/>
+			<BottomRight v-if="status === POINTER_STATUS.BOTTOM_RIGHT" class="arrow bottom-right"/>
+			<div class="text" :style="{backgroundColor: pointerData.color}" v-if="userData != null">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
+		</div>
+		<!-- 详细信息对话框 -->
+		<el-dialog class="user-info-dialog" width="80%" top="32vh" :center="true" :show-close="false" v-if="userData != null" v-model="dialogShow" destroy-on-close>
+			<!-- 头部 -->
+			<template #header>
+				<div class="header">
+					<img class="avatar" :src="userStore.getUserAvatarURL(userData)" alt="无法显示"/>
+					<div class="text">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
+				</div>
+			</template>
+			<div class="content">
+				<ul class="info">
+					<li>经度：{{ pointerData.position.longitude }}</li>
+					<li>纬度：{{ pointerData.position.latitude }}</li>
+					<li>高程：{{ pointerData.position.elevation == null ? '该用户高程信息不可用' : pointerData.position.elevation }}</li>
+				</ul>
+			</div>
+			<template #footer>
+				<div class="button-box">
+					<el-button class="close" type="success" plain @click="dialogShow = false">知道了</el-button>
+				</div>
+			</template>
+		</el-dialog>
 	</div>
 </template>
 
@@ -128,6 +152,8 @@ const HEIGHT_STATUS = {
 	 */
 	DOWN: 2
 };
+// 详情对话框显示状态
+const dialogShow = ref(false);
 
 /**
  * 刷新指针自身位置
@@ -169,7 +195,8 @@ const refreshPointerPosition = () => {
 		// 屏幕中
 		if (point[1] >= 0 && point[1] <= mapStore.size.height) {
 			status.value = POINTER_STATUS.IN_SCREEN;
-			y.value = point[1];
+			x.value = point[0] - 24;
+			y.value = point[1] - 24;
 			return;
 		}
 		// 下方
@@ -252,117 +279,160 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.user-marker, .out-pointer {
+.user-pointer {
 	position: absolute;
-}
 
-.user-marker {
-	height: 48px;
-	width: 48px;
-
-	.marker-base {
+	.user-marker, .out-pointer {
 		position: absolute;
-		width: 100%;
-		height: 100%;
-		transition: transform 0.1s ease-out;
+	}
 
-		.circle {
+	// 形态1：用户头像指针
+	.user-marker {
+		height: 48px;
+		width: 48px;
+		left: 0;
+		top: 0;
+
+		.marker-base {
 			position: absolute;
-			width: 29px;
-			height: 29px;
-			left: 9.5px;
-			top: 9.5px;
+			width: 100%;
+			height: 100%;
+			transition: transform 0.1s ease-out;
+
+			.circle {
+				position: absolute;
+				width: 29px;
+				height: 29px;
+				left: 9.5px;
+				top: 9.5px;
+				border-radius: 50%;
+			}
+
+			.heading {
+				position: absolute;
+				width: 0;
+				height: 0;
+				border-bottom-width: 16px;
+				border-bottom-style: solid;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;
+				left: 14.5px;
+			}
+		}
+
+		.height-icon {
+			position: absolute;
+			width: 18px;
+			height: 18px;
+			right: 0;
+			bottom: 0;
+		}
+
+		.user-avatar {
+			position: absolute;
+			width: 24px;
+			left: 12px;
+			top: 12px;
 			border-radius: 50%;
 		}
+	}
 
-		.heading {
+	// 形态2：屏幕外指针
+	.out-pointer {
+		width: 148px;
+		height: 76px;
+		left: 0;
+		top: 0;
+
+		.text {
 			position: absolute;
-			width: 0;
-			height: 0;
-			border-bottom-width: 16px;
-			border-bottom-style: solid;
-			border-left: 10px solid transparent;
-			border-right: 10px solid transparent;
-			left: 14.5px;
+			width: 100px;
+			height: 28px;
+			left: 24px;
+			top: 24px;
+			line-height: 28px;
+			text-align: center;
+			font-size: 12px;
+			color: white;
+			border-radius: 6px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.arrow {
+			position: absolute;
+			height: 24px;
+			width: 24px;
+		}
+
+		// 调整各个箭头
+		.top, .bottom {
+			left: 62px;
+		}
+
+		.bottom {
+			bottom: 0;
+		}
+
+		.left, .right {
+			top: 26px;
+		}
+
+		.right {
+			right: 0;
+		}
+
+		.top-left, .bottom-left {
+			left: 5px;
+		}
+
+		.top-left, .top-right {
+			top: 4px;
+		}
+
+		.bottom-left, .bottom-right {
+			bottom: 4px;
+		}
+
+		.top-right, .bottom-right {
+			right: 5px;
 		}
 	}
 
-	.height-icon {
-		position: absolute;
-		width: 18px;
-		height: 18px;
-		right: 0;
-		bottom: 0;
-	}
+	// 详细信息对话框
+	.user-info-dialog {
+		.header {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 
-	.user-avatar {
-		position: absolute;
-		width: 24px;
-		left: 12px;
-		top: 12px;
-		border-radius: 50%;
-	}
-}
+			.avatar {
+				height: 32px;
+				border-radius: 50%;
+				border: #1d1dd2 2px solid;
+			}
 
-.out-pointer {
-	width: 148px;
-	height: 76px;
-	left: 10vw;
-	top: 10vh;
+			.text {
+				position: relative;
+				margin-left: 3%;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
 
-	.text {
-		position: absolute;
-		width: 100px;
-		height: 28px;
-		left: 24px;
-		top: 24px;
-		line-height: 28px;
-		text-align: center;
-		font-size: 12px;
-		color: white;
-		border-radius: 6px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+		.content {
+			position: relative;
+		}
 
-	.arrow {
-		position: absolute;
-		height: 24px;
-		width: 24px;
-	}
-
-	// 调整各个箭头
-	.top, .bottom {
-		left: 62px;
-	}
-
-	.bottom {
-		bottom: 0;
-	}
-
-	.left, .right {
-		top: 26px;
-	}
-
-	.right {
-		right: 0;
-	}
-
-	.top-left, .bottom-left {
-		left: 5px;
-	}
-
-	.top-left, .top-right {
-		top: 4px;
-	}
-
-	.bottom-left, .bottom-right {
-		bottom: 4px;
-	}
-
-	.top-right, .bottom-right {
-		right: 5px;
+		.button-box {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
 	}
 }
 </style>
