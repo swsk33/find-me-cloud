@@ -1,9 +1,9 @@
 <template>
 	<div class="map">
 		<div id="map-container"></div>
-		<Location class="location-button" @click="locationStore.getUserPosition(true, true)"/>
+		<Location class="location-button" @click="mapStore.zoomToUser()"/>
 		<div class="user-marker-container">
-			<UserMarker class="marker my-self" :avatar="userStore.getUserAvatarURL()"/>
+			<UserMarker class="marker my-self" :style="mapStore.coordinateToMapContainerPositionCSS(locationStore.position.longitude, locationStore.position.latitude)" :avatar="userStore.getUserAvatarURL()" :heading-value="locationStore.position.orientation" color="blue"/>
 		</div>
 	</div>
 </template>
@@ -24,16 +24,19 @@ const userStore = useUserStore();
 // 响应式位置信息
 const WGS84Coordinates = useGeolocation().coords;
 
+// 监听位置信息
 watch(WGS84Coordinates, () => {
+	// 实时地转换经纬度坐标
+	locationStore.convertToGCJ02(WGS84Coordinates.value.longitude, WGS84Coordinates.value.latitude);
 	// 实时赋值高度变化
 	locationStore.position.elevation = WGS84Coordinates.value.altitude;
 });
 
-onMounted(() => {
+onMounted(async () => {
 	// 初始化地图
-	mapStore.initMap('map-container');
-	// 初次定位
-	locationStore.getUserPosition(true, true);
+	await mapStore.initMap('map-container');
+	// 缩放到用户
+	mapStore.zoomToUser();
 	// 添加陀螺仪朝向信息（响应式）
 	locationStore.position.orientation = useDeviceOrientation().alpha;
 });

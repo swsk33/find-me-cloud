@@ -1,40 +1,68 @@
 <template>
 	<div class="user-marker">
-		<img :src="props.avatar" alt="无法显示"/>
+		<div class="marker-base" :style="{transform: 'rotate(' + (360 - props.headingValue) + 'deg)'}">
+			<div class="circle" :style="circleStyle">
+			</div>
+			<div class="heading" :style="headingStyle" v-if="props.headingValue != null"></div>
+		</div>
+		<img class="user-avatar" :src="props.avatar" alt="无法显示"/>
 	</div>
 </template>
 
 <script setup>
-const props = defineProps(['avatar']);
+import { reactive } from 'vue';
+
+const props = defineProps(['avatar', 'color', 'headingValue']);
+
+// 自定义css部分绑定
+const circleStyle = reactive({
+	backgroundColor: props.color,
+	boxShadow: props.color + ' 0 0 6px'
+});
+
+const headingStyle = reactive({
+	borderBottomColor: props.color
+});
 </script>
 
 <style lang="scss" scoped>
 .user-marker {
 	position: absolute;
-	left: 30vw;
-	top: 30vh;
-	height: 36px;
-	width: 36px;
-	border-radius: 50%;
-	border-style: solid;
-	border-width: 3px;
-	border-color: #1d1dd2;
+	height: 48px;
+	width: 48px;
 
-	img {
+	.marker-base {
+		position: absolute;
 		width: 100%;
 		height: 100%;
-		border-radius: 50%;
+
+		.circle {
+			position: absolute;
+			width: 29px;
+			height: 29px;
+			left: 9.5px;
+			top: 9.5px;
+			border-radius: 50%;
+		}
+
+		.heading {
+			position: absolute;
+			width: 0;
+			height: 0;
+			border-bottom-width: 16px;
+			border-bottom-style: solid;
+			border-left: 10px solid transparent;
+			border-right: 10px solid transparent;
+			left: 14.5px;
+		}
 	}
 
-	.heading-arrow {
+	.user-avatar {
 		position: absolute;
-		left: 0;
-		top: 0;
-		box-sizing: border-box;
-		width: 28px;
-		height: 28px;
-		margin: 0;
-		padding: 0;
+		width: 24px;
+		left: 12px;
+		top: 12px;
+		border-radius: 50%;
 	}
 }
 </style>
