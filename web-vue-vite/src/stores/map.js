@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { useLocationStore } from './location';
+import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 
 export const useMapStore = defineStore('mapStore', {
 	state() {
@@ -38,20 +39,30 @@ export const useMapStore = defineStore('mapStore', {
 		 */
 		zoomToUser() {
 			const locationStore = useLocationStore();
-			this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
-		},
-		/**
-		 * 地理坐标转换为容器坐标CSS
-		 * @param longitude 经度
-		 * @param latitude 纬度
-		 * @return {Object} 容器位置CSS（绝对定位）
-		 */
-		coordinateToMapContainerPositionCSS(longitude, latitude) {
-			if (this.map == null) {
-				return { left: 0, top: 0 };
+			if (locationStore.position.longitude === undefined || locationStore.position.latitude === undefined) {
+				showMessage('定位失败！请检查定位功能是否开启，以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
+				return;
 			}
-			const result = this.map.lngLatToContainer([longitude, latitude]);
-			return { left: (result.getX() - 24) + 'px', top: (result.getY() - 24) + 'px' };
+			this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
+		}
+	},
+	getters: {
+		/**
+		 * 地理坐标转换为容器坐标
+		 */
+		coordinateToMapContainerPositionCSS: (state) => {
+			/**
+			 * @param longitude 经度
+			 * @param latitude 纬度
+			 * @return {Array} [x, y]
+			 */
+			return (longitude, latitude) => {
+				if (state.map == null || longitude == null || latitude == null) {
+					return [0, 0];
+				}
+				const result = state.map.lngLatToContainer([longitude, latitude]);
+				return [result.getX() - 24, result.getY() - 24];
+			};
 		}
 	}
 });

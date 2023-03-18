@@ -3,23 +3,29 @@
 		<div id="map-container"></div>
 		<Location class="location-button" @click="mapStore.zoomToUser()"/>
 		<div class="user-marker-container">
-			<UserMarker class="marker my-self" :style="mapStore.coordinateToMapContainerPositionCSS(locationStore.position.longitude, locationStore.position.latitude)" :avatar="userStore.getUserAvatarURL()" :heading-value="locationStore.position.orientation" color="blue"/>
+			<UserPointerMarker ref="selfMarker" class="user-self" :user-id="0"/>
+			<UserPointerMarker ref="othersMarker" class="user-in-room" v-for="(value, key, index) in pointerStore.userInRoom" :user-id="key" :key="key"/>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useMapStore } from '../../stores/map';
 import { useLocationStore } from '../../stores/location';
 import { useUserStore } from '../../stores/user';
 import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
-import UserMarker from './components/UserMarker.vue';
+import UserPointerMarker from './components/UserPointerMarker.vue';
+import { usePointerStore } from '../../stores/user-pointer';
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
 const userStore = useUserStore();
+const pointerStore = usePointerStore();
+
+const selfMarker = ref(null);
+const othersMarker = ref([]);
 
 // 响应式位置信息
 const WGS84Coordinates = useGeolocation().coords;
@@ -35,10 +41,19 @@ watch(WGS84Coordinates, () => {
 onMounted(async () => {
 	// 初始化地图
 	await mapStore.initMap('map-container');
-	// 缩放到用户
-	mapStore.zoomToUser();
 	// 添加陀螺仪朝向信息（响应式）
 	locationStore.position.orientation = useDeviceOrientation().alpha;
+	// 给地图注册事件：当地图被移动、缩放时，刷新地图上所有指针位置
+	mapStore.map.on('mapmove', (e) => {
+		selfMarker.value.refreshPointerPosition();
+		for (let item of othersMarker.value) {
+			item.refreshPointerPosition();
+		}
+	});
+	// 等待3秒后缩放至用户
+	setTimeout(() => {
+		mapStore.zoomToUser();
+	}, 3000);
 });
 </script>
 
