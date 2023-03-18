@@ -14,7 +14,14 @@ export const useMapStore = defineStore('mapStore', {
 			/**
 			 * 地图对象
 			 */
-			map: undefined
+			map: undefined,
+			/**
+			 * 地图容器宽高
+			 */
+			size: {
+				width: undefined,
+				height: undefined
+			}
 		};
 	},
 	actions: {
@@ -33,17 +40,27 @@ export const useMapStore = defineStore('mapStore', {
 				zoom: 16,
 				center: [118.715383, 32.203407]
 			});
+			// 设定尺寸数据
+			const mapSize = this.map.getSize();
+			this.size.width = mapSize.getWidth();
+			this.size.height = mapSize.getHeight();
 		},
 		/**
 		 * 缩放地图到用户
+		 * @param longitude 用户所在经度
+		 * @param latitude 用户所在纬度
 		 */
-		zoomToUser() {
-			const locationStore = useLocationStore();
-			if (locationStore.position.longitude === undefined || locationStore.position.latitude === undefined) {
-				showMessage('定位失败！请检查定位功能是否开启，以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
+		zoomToUser(longitude = 0, latitude = 0) {
+			if (longitude === 0 && latitude === 0) {
+				const locationStore = useLocationStore();
+				if (locationStore.position.longitude === undefined || locationStore.position.latitude === undefined) {
+					showMessage('定位失败！请检查定位功能是否开启，以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
+					return;
+				}
+				this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
 				return;
 			}
-			this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
+			this.map.setZoomAndCenter(17, [longitude, latitude]);
 		}
 	},
 	getters: {
@@ -61,7 +78,7 @@ export const useMapStore = defineStore('mapStore', {
 					return [0, 0];
 				}
 				const result = state.map.lngLatToContainer([longitude, latitude]);
-				return [result.getX() - 24, result.getY() - 24];
+				return [result.getX(), result.getY()];
 			};
 		}
 	}

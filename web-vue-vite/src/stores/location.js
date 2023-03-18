@@ -6,7 +6,7 @@ export const useLocationStore = defineStore('locationStore', {
 	state() {
 		return {
 			/**
-			 * 位置信息，包含经纬度、海拔、朝向
+			 * 用户自身的位置信息，包含经纬度、海拔、朝向
 			 */
 			position: {
 				/**

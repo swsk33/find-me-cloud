@@ -17,7 +17,7 @@ import { useUserStore } from '../../stores/user';
 import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
 import UserPointerMarker from './components/UserPointerMarker.vue';
-import { usePointerStore } from '../../stores/user-pointer';
+import { usePointerStore } from '../../stores/pointer';
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
