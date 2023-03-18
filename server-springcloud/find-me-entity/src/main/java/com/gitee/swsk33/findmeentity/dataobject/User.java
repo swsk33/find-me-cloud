@@ -1,7 +1,9 @@
 package com.gitee.swsk33.findmeentity.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.findmeentity.param.ValidationRules;
+import com.gitee.swsk33.findmeentity.serializer.LongToStringSerializer;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -17,6 +19,7 @@ public class User implements Serializable {
 	/**
 	 * 主键id（雪花id）
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	@NotNull(groups = ValidationRules.UpdateData.class, message = "用户id不能为空！")
 	private Long id;
 

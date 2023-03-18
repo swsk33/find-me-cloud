@@ -5,7 +5,7 @@ export const usePointerStore = defineStore('userPointerStore', {
 	state() {
 		return {
 			/**
-			 * 表示房间内所有用户（其中每个属性是用户id，值是对应的指针对象，除了自己之外）
+			 * 表示房间内所有用户，这里是存放房间内其他用户地理位置的地方（其中每个属性是用户id，值是对应的指针对象，除了自己之外，指针对象包含position位置和color颜色两个属性）
 			 */
 			userInRoom: {},
 			/**

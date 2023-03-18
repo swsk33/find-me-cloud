@@ -22,9 +22,16 @@ export default defineConfig({
 		https: true,
 		// 跨域配置
 		proxy: {
+			// 普通请求
 			'/api': {
 				target: 'http://127.0.0.1:8888/',
 				changeOrigin: true
+			},
+			// WebSocket
+			'/ws': {
+				target: 'ws://127.0.0.1:8888/',
+				changeOrigin: true,
+				ws: true
 			}
 		}
 	}

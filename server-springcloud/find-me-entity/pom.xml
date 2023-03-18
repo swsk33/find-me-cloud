@@ -29,10 +29,10 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 
-		<!-- Jackson注解 -->
+		<!-- Jackson支持 -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 	</dependencies>
 </project>
