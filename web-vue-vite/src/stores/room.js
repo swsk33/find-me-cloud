@@ -5,6 +5,7 @@ import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 import { useUserStore } from './user';
 import { useMessageStore } from './message';
 import { useLocationStore } from './location';
+import { usePointerStore } from './pointer';
 
 export const useRoomStore = defineStore('roomStore', {
 	state() {
@@ -17,6 +18,10 @@ export const useRoomStore = defineStore('roomStore', {
 			 * 当前房间信息
 			 */
 			roomInfo: undefined,
+			/**
+			 * 房间的密码
+			 */
+			roomPassword: undefined,
 			/**
 			 * 当前会话对象（WebSocket对象）
 			 */
@@ -34,8 +39,17 @@ export const useRoomStore = defineStore('roomStore', {
 		 * @param password 房间密码
 		 */
 		async connectToRoom(id, password) {
+			const locationStore = useLocationStore();
+			if (!locationStore.checkLocationEnabled(true)) {
+				return;
+			}
+			if (id == null || password == null) {
+				showMessage('房间id或者密码不能为空！', MESSAGE_TYPE.error);
+				return;
+			}
 			const userStore = useUserStore();
 			const messageStore = useMessageStore();
+			const pointerStore = usePointerStore();
 			// 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
 			this.session = new WebSocket('wss://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
 			// 连接建立事件
@@ -57,6 +71,10 @@ export const useRoomStore = defineStore('roomStore', {
 			// 断开连接事件
 			this.session.addEventListener('close', (e) => {
 				this.inTheRoom = false;
+				// 清空本地房间和用户数据
+				this.roomInfo = undefined;
+				this.roomPassword = undefined;
+				pointerStore.userInRoom = {};
 				showMessage('已断开和房间连接！', MESSAGE_TYPE.warning);
 			});
 			// 发生错误事件
@@ -64,8 +82,11 @@ export const useRoomStore = defineStore('roomStore', {
 				showMessage('发生错误！', MESSAGE_TYPE.error);
 				console.error(e);
 			});
+			// 打开实时位置发送
+			this.enablePositionSender();
 			// 最后设定房间信息
 			await this.getRoomInfo(id);
+			this.roomPassword = password;
 		},
 		/**
 		 * 传入房间对象设定房间信息（会删除自己的信息）
@@ -74,6 +95,7 @@ export const useRoomStore = defineStore('roomStore', {
 		setRoomInfo(room) {
 			const userStore = useUserStore();
 			delete room.users[userStore.userData.id];
+			// 设定信息
 			this.roomInfo = room;
 		},
 		/**

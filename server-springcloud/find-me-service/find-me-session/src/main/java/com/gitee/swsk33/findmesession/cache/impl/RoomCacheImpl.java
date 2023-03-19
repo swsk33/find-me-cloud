@@ -47,6 +47,9 @@ public class RoomCacheImpl implements RoomCache {
 	@Override
 	public void addUserToRoom(String roomId, User user) {
 		Room getRoom = getRoom(roomId, false);
+		if (getRoom == null) {
+			log.error("待操作房间不存在！");
+		}
 		// 分布式锁上锁
 		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);
 		roomLock.lock();
@@ -69,6 +72,10 @@ public class RoomCacheImpl implements RoomCache {
 	@Override
 	public User removeUserFromRoom(String roomId, long userId) {
 		Room getRoom = getRoom(roomId, false);
+		if (getRoom == null) {
+			log.error("待操作房间不存在！");
+			return null;
+		}
 		User removedUser = null;
 		// 分布式锁上锁
 		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);

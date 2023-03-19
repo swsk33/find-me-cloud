@@ -1,6 +1,5 @@
 package com.gitee.swsk33.findmesession.context;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmesession.factory.KafkaDynamicConsumerFactory;
 import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
@@ -81,7 +80,7 @@ public class KafkaConsumerContext {
 						continue;
 					}
 					// 序列化消息并返回给用户
-					session.getAsyncRemote().sendText(JacksonMapper.getMapper().writeValueAsString(data));
+					session.getBasicRemote().sendText(JacksonMapper.getMapper().writeValueAsString(data));
 				}
 			} catch (Exception e) {
 				log.error("Kafka消费者(用户id：" + userId + ")拉取消息或者序列化时发生错误！");

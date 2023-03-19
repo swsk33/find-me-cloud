@@ -1,6 +1,8 @@
 package com.gitee.swsk33.findmeentity.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.findmeentity.param.MessageType;
+import com.gitee.swsk33.findmeentity.serializer.LongToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,6 +21,7 @@ public class Message<T> implements Serializable {
 	/**
 	 * 发送者用户id（为0时表示系统消息）
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	private long senderId;
 
 	/**

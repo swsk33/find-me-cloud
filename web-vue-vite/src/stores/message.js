@@ -80,14 +80,14 @@ export const useMessageStore = defineStore('messageStore', {
 					orientation: undefined
 				});
 				// 显示提示
-				showMessage(messageObject.nickname + '加入房间！', MESSAGE_TYPE.success);
+				showMessage(messageObject.data.nickname + '加入房间！', MESSAGE_TYPE.success);
 			};
 			// 用户退出处理
 			const userExit = (messageObject) => {
 				// 从指针列表移除用户
 				pointerStore.removePointer(messageObject.senderId);
 				// 显示提示
-				showMessage(messageObject.nickname + '退出房间！', MESSAGE_TYPE.warning);
+				showMessage(messageObject.data.nickname + '退出房间！', MESSAGE_TYPE.warning);
 			};
 			// 用户位置变化处理
 			const userPositionChange = (messageObject) => {

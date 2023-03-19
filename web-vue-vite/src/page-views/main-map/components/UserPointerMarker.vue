@@ -303,6 +303,9 @@ onMounted(() => {
 	} else {
 		// 订阅指针store获取对应的其他用户的信息，位置变化及时刷新指针坐标和高程信息
 		pointerStore.$subscribe((mutation, state) => {
+			if (state.userInRoom[props.userId] == null) {
+				return;
+			}
 			pointerData.position = state.userInRoom[props.userId].position;
 			pointerData.color = state.userInRoom[props.userId].color;
 			// 改变指针坐标
