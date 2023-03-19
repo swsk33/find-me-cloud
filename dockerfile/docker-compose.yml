@@ -1,0 +1,85 @@
+services:
+  # Nginx反向代理
+  find-me-nginx:
+    image: swsk33/find-me-web:1.0.0
+    volumes:
+      - find-me-nginx-config:/etc/nginx
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - find-me-gateway
+  # 网关
+  find-me-gateway:
+    image: swsk33/find-me-gateway:1.0.0
+    environment:
+      - CONSUL_HOST=consul
+      - REDIS_HOST=redis
+    links:
+      - consul
+      - redis
+  # 用户模块
+  find-me-user:
+    image: swsk33/find-me-user:1.0.0
+    environment:
+      - CONSUL_HOST=consul
+      - REDIS_HOST=redis
+      - MONGO_HOST=mongodb
+      # 邮箱配置（需要自己填一下）
+      - EMAIL_SMTP_HOST=smtp.163.com
+      - EMAIL_USER=你的邮箱
+      - EMAIL_PASSWORD=授权码
+    links:
+      - consul
+      - mongodb
+      - redis
+  # 会话模块
+  find-me-session:
+    image: swsk33/find-me-session:1.0.0
+    environment:
+      - CONSUL_HOST=consul
+      - REDIS_HOST=redis
+      - KAFKA_URL=kafka:9092
+    links:
+      - consul
+      - redis
+      - kafka
+  # 图片模块
+  find-me-image:
+    image: swsk33/find-me-image:1.0.0
+    environment:
+      - CONSUL_HOST=consul
+      - MONGO_HOST=mongodb
+    links:
+      - consul
+      - mongodb
+  # Consul注册中心
+  consul:
+    image: consul
+    command: agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+  # MongoDB数据库
+  mongodb:
+    image: mongo
+    volumes:
+      - find-me-mongodb-data:/data/db
+  # Redis数据库
+  redis:
+    image: redis
+    volumes:
+      - find-me-redis-data:/data
+  # Kafka消息中间件
+  kafka:
+    image: swsk33/kafka-standalone
+    environment:
+      - ZOOKEEPER_HOST=zookeeper
+      - KAFKA_HOST=kafka
+    links:
+      - zookeeper
+  # Zookeeper
+  zookeeper:
+    image: zookeeper
+
+volumes:
+  find-me-nginx-config:
+  find-me-mongodb-data:
+  find-me-redis-data:

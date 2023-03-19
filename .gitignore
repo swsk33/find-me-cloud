@@ -1,6 +1,10 @@
 # maven
 /**/target/
 
+# dockerbuild
+/**/*.jar
+/**/*.tar
+
 # vscode
 /**/.vscode/
 
