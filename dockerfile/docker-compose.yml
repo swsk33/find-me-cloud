@@ -1,7 +1,7 @@
 services:
   # Nginx反向代理
   find-me-nginx:
-    image: swsk33/find-me-web:1.0.0
+    image: swsk33/find-me-web
     volumes:
       - find-me-nginx-config:/etc/nginx
     ports:
@@ -11,7 +11,7 @@ services:
       - find-me-gateway
   # 网关
   find-me-gateway:
-    image: swsk33/find-me-gateway:1.0.0
+    image: swsk33/find-me-gateway
     environment:
       - CONSUL_HOST=consul
       - REDIS_HOST=redis
@@ -20,7 +20,7 @@ services:
       - redis
   # 用户模块
   find-me-user:
-    image: swsk33/find-me-user:1.0.0
+    image: swsk33/find-me-user
     environment:
       - CONSUL_HOST=consul
       - REDIS_HOST=redis
@@ -35,7 +35,7 @@ services:
       - redis
   # 会话模块
   find-me-session:
-    image: swsk33/find-me-session:1.0.0
+    image: swsk33/find-me-session
     environment:
       - CONSUL_HOST=consul
       - REDIS_HOST=redis
@@ -46,7 +46,7 @@ services:
       - kafka
   # 图片模块
   find-me-image:
-    image: swsk33/find-me-image:1.0.0
+    image: swsk33/find-me-image
     environment:
       - CONSUL_HOST=consul
       - MONGO_HOST=mongodb
