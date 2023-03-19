@@ -129,7 +129,7 @@ export const useRoomStore = defineStore('roomStore', {
 					senderId: userStore.userData.id,
 					data: locationStore.position
 				}));
-			}, 200);
+			}, 100);
 		}
 	}
 });

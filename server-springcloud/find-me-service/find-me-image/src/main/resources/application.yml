@@ -10,6 +10,11 @@ spring:
     default-property-inclusion: non_null
     deserialization:
       fail-on-unknown-properties: false
+  # 最大文件大小配置
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   # 应用程序名
   application:
     name: find-me-image

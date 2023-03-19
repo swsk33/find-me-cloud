@@ -14,6 +14,7 @@ import com.gitee.swsk33.findmeuser.service.EmailService;
 import com.gitee.swsk33.findmeuser.service.UserService;
 import com.gitee.swsk33.findmeutility.util.BCryptUtils;
 import com.gitee.swsk33.findmeutility.util.IDGenerator;
+import com.gitee.swsk33.findmeutility.util.MongoUpdateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -80,6 +81,12 @@ public class UserServiceImpl implements UserService {
 		if (user.getId() != StpUtil.getLoginIdAsLong()) {
 			return ResultFactory.createFailedResult("您不能修改其他用户信息！");
 		}
+		// 删除没变化的内容
+		MongoUpdateUtils.removeSame(getUser, user);
+		// 如果没有什么要修改的内容，则直接返回
+		if (MongoUpdateUtils.isObjectContentEmpty(user)) {
+			return ResultFactory.createVoidSuccessResult("未修改！");
+		}
 		// 判断修改的用户名是否被占用
 		if (user.getUsername() != null && userDAO.getByUsernameOrEmail(user.getUsername()) != null) {
 			return ResultFactory.createFailedResult("用户名被占用！");
@@ -93,7 +100,7 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(BCryptUtils.encode(user.getPassword()));
 		}
 		// 如果用户头像被修改，则删除上一个头像
-		if (!StrUtil.isEmpty(user.getAvatarId()) && !StrUtil.isEmpty(getUser.getAvatarId()) && !user.getAvatarId().equals(getUser.getAvatarId())) {
+		if (!StrUtil.isEmpty(user.getAvatarId()) && !StrUtil.isEmpty(getUser.getAvatarId())) {
 			// 删除旧的
 			avatarClient.delete(getUser.getAvatarId());
 		}

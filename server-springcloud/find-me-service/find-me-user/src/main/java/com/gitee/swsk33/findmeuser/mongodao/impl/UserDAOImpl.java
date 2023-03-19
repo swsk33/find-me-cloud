@@ -2,7 +2,7 @@ package com.gitee.swsk33.findmeuser.mongodao.impl;
 
 import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeuser.mongodao.UserDAO;
-import com.gitee.swsk33.findmeutility.util.MongoUtils;
+import com.gitee.swsk33.findmeutility.util.MongoUpdateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,7 +27,7 @@ public class UserDAOImpl implements UserDAO {
 	public void update(User user) {
 		Criteria criteria = Criteria.where("id").is(user.getId());
 		Query query = new Query(criteria);
-		Update update = MongoUtils.generateUpdate(user);
+		Update update = MongoUpdateUtils.generateUpdate(user);
 		mongoTemplate.updateFirst(query, update, User.class);
 	}
 
