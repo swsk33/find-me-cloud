@@ -49,6 +49,11 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 			session.close();
 			return;
 		}
+		// 检测用户是否已经在房间
+		if (getRoom.getUsers().containsKey(userId)) {
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "已加入房间！"));
+			return;
+		}
 		// 比对密码
 		// 序列化内容体
 		String password = JacksonMapper.getMapper().convertValue(message.getData(), String.class);
@@ -70,8 +75,9 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 		log.info("用户id：" + userId + "的会话认证通过！已被确定为持久会话！");
 		// 把用户加入房间
 		roomCache.addUserToRoom(roomId, getUser.getData());
-		// 广播消息-房间改变
+		// 广播消息-房间改变，用户加入
 		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, userId, roomCache.getRoom(roomId, true)));
+		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.USER_JOIN, userId, getUser.getData()));
 		// 与此同时，为该用户创建一个专用的kafka消费者用于接受该房间内其他用户信息
 		kafkaConsumerContext.addConsumerTask(roomId, userId, session);
 		log.info("用户：" + getUser.getData().getNickname() + "成功加入房间！");

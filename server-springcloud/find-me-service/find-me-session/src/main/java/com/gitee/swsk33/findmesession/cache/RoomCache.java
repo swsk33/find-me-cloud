@@ -45,8 +45,9 @@ public interface RoomCache {
 	 *
 	 * @param roomId 房间id
 	 * @param userId 用户id
+	 * @return 被移除的用户对象
 	 */
-	void removeUserFromRoom(String roomId, long userId);
+	User removeUserFromRoom(String roomId, long userId);
 
 	/**
 	 * 设定或者修改房间集结点

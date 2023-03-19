@@ -17,6 +17,14 @@ public enum MessageType {
 	 */
 	ROOM_CHANGED,
 	/**
+	 * 用户加入
+	 */
+	USER_JOIN,
+	/**
+	 * 用户退出
+	 */
+	USER_EXIT,
+	/**
 	 * 认证消息
 	 */
 	AUTH,

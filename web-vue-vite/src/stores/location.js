@@ -1,6 +1,7 @@
 // 位置状态
 import { defineStore } from 'pinia';
 import gcoord from 'gcoord';
+import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 
 export const useLocationStore = defineStore('locationStore', {
 	state() {
@@ -42,6 +43,20 @@ export const useLocationStore = defineStore('locationStore', {
 			const result = gcoord.transform([longitude, latitude], gcoord.WGS84, gcoord.GCJ02);
 			this.position.longitude = result[0];
 			this.position.latitude = result[1];
+		},
+		/**
+		 * 检查定位是否可用
+		 * @param {Boolean} showTip 如果不可用，是否弹出提示
+		 * @return {Boolean} 定位是否可用
+		 */
+		checkLocationEnabled(showTip = false) {
+			if (this.position.longitude == null || this.position.latitude == null) {
+				if (showTip) {
+					showMessage('定位不可用！请检查定位功能是否开启，以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
+				}
+				return false;
+			}
+			return true;
 		}
 	}
 });

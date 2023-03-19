@@ -1,5 +1,6 @@
 package com.gitee.swsk33.findmesession.websocket;
 
+import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.factory.MessageFactory;
 import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmeentity.model.Room;
@@ -108,18 +109,20 @@ public class SessionWebSocketAPI {
 	@OnClose
 	public void onClose(Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) {
 		log.info("用户(id:" + userId + ")断开连接！");
-		// 移除对应的kafka消费者
 		// 使用Spring上下文容器手动获取Bean，下面也一样
 		KafkaConsumerContext kafkaConsumerContext = applicationContext.getBean(KafkaConsumerContext.class);
 		RoomCache roomCache = applicationContext.getBean(RoomCache.class);
 		KafkaTemplate<String, Message<?>> kafkaTemplate = applicationContext.getBean("kafkaTemplate", KafkaTemplate.class);
+		// 关闭用户对应的kafka消费者及其任务
 		kafkaConsumerContext.removeConsumerTask(userId);
 		// 从房间移除用户
-		roomCache.removeUserFromRoom(roomId, userId);
+		User removedUser = roomCache.removeUserFromRoom(roomId, userId);
 		Room getRoom = roomCache.getRoom(roomId, true);
-		// 如果房间还有人，则发送房间变化通知
-		if (getRoom.getUsers().size() > 0) {
+		// 如果被移除的用户为null，说明这个用户本来就没加入房间，不进行通知
+		// 如果房间还有人，则发送房间变化和用户退出通知
+		if (removedUser != null && getRoom.getUsers().size() > 0) {
 			kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, getRoom));
+			kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.USER_EXIT, userId, removedUser));
 		}
 	}
 

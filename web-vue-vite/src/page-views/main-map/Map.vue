@@ -20,7 +20,7 @@
 			</div>
 			<template #footer>
 				<div class="button-box">
-					<el-button class="button ok" type="success" @click="" plain>确定</el-button>
+					<el-button class="button ok" type="success" @click="createRoom" plain>确定</el-button>
 					<el-button class="button cancel" type="danger" plain @click="showCreateDialog = false">取消</el-button>
 				</div>
 			</template>
@@ -39,6 +39,8 @@ import Location from './components/Location.vue';
 import UserPointerMarker from './components/UserPointerMarker.vue';
 import { usePointerStore } from '../../stores/pointer';
 import { useRoomStore } from '../../stores/room';
+import { REQUEST_METHOD, sendRequest } from '../../utils/request';
+import { MESSAGE_TYPE, showMessage } from '../../utils/element-message';
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
@@ -48,6 +50,9 @@ const roomStore = useRoomStore();
 
 const selfMarker = ref(null);
 const othersMarker = ref([]);
+
+// 响应式位置信息
+const WGS84Coordinates = useGeolocation().coords;
 
 // 对话窗状态
 const showCreateDialog = ref(false);
@@ -63,11 +68,20 @@ const createRoomData = reactive({
  * 创建房间方法
  */
 const createRoom = async () => {
-	const result = roomStore.createRoom(createRoomData.name, createRoomData.password);
+	if (!locationStore.checkLocationEnabled(true)) {
+		showCreateDialog.value = false;
+		return;
+	}
+	const response = await sendRequest('/api/session/room/create', REQUEST_METHOD.POST, createRoomData);
+	if (!response.success) {
+		showMessage(response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showMessage('创建房间成功！', MESSAGE_TYPE.success);
+	// 然后立马加入房间
+	await roomStore.connectToRoom(response.data.id, createRoomData.password);
+	showCreateDialog.value = false;
 };
-
-// 响应式位置信息
-const WGS84Coordinates = useGeolocation().coords;
 
 // 监听位置信息
 watch(WGS84Coordinates, () => {

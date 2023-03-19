@@ -36,14 +36,15 @@ export const useRoomStore = defineStore('roomStore', {
 		async connectToRoom(id, password) {
 			const userStore = useUserStore();
 			const messageStore = useMessageStore();
-			this.session = new WebSocket('ws://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
+			// 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
+			this.session = new WebSocket('wss://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
 			// 连接建立事件
 			this.session.addEventListener('open', (e) => {
 				this.inTheRoom = true;
 				showMessage('已连接至房间！认证中...', MESSAGE_TYPE.warning);
 				// 执行认证
 				this.session.send(JSON.stringify({
-					type: 'AUTH',
+					type: messageStore.messageType.auth,
 					data: password
 				}));
 			});
@@ -61,6 +62,7 @@ export const useRoomStore = defineStore('roomStore', {
 			// 发生错误事件
 			this.session.addEventListener('error', (e) => {
 				showMessage('发生错误！', MESSAGE_TYPE.error);
+				console.error(e);
 			});
 			// 最后设定房间信息
 			await this.getRoomInfo(id);
@@ -88,33 +90,13 @@ export const useRoomStore = defineStore('roomStore', {
 			this.setRoomInfo(response.data);
 		},
 		/**
-		 * 创建房间
-		 * @param name 房间名
-		 * @param password 密码
-		 * @return {Boolean} 是否请求成功
-		 */
-		async createRoom(name, password) {
-			const response = await sendRequest('/api/session/room/create', REQUEST_METHOD.POST, {
-				name: name,
-				password: password
-			});
-			if (!response.success) {
-				showMessage(response.message, MESSAGE_TYPE.error);
-				return false;
-			}
-			showMessage('创建房间成功！', MESSAGE_TYPE.success);
-			// 然后立马加入房间
-			await this.connectToRoom(response.data.id, password);
-			return true;
-		},
-		/**
 		 * 打开位置发送计时器
 		 */
 		enablePositionSender() {
 			const locationStore = useLocationStore();
 			const userStore = useUserStore();
 			this.positionSender = setInterval(() => {
-				// 如果会话意外结束或者不在房间，就停止计时器
+				// 如果会话意外结束或者已不在房间，就停止计时器
 				if (!this.inTheRoom || this.session == null) {
 					clearInterval(this.positionSender);
 					return;

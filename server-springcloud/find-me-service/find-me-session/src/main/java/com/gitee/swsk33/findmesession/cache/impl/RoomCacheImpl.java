@@ -67,14 +67,15 @@ public class RoomCacheImpl implements RoomCache {
 	}
 
 	@Override
-	public void removeUserFromRoom(String roomId, long userId) {
+	public User removeUserFromRoom(String roomId, long userId) {
 		Room getRoom = getRoom(roomId, false);
+		User removedUser = null;
 		// 分布式锁上锁
 		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);
 		roomLock.lock();
 		try {
 			// 从房间移除用户
-			getRoom.getUsers().remove(userId);
+			removedUser = getRoom.getUsers().remove(userId);
 			// 若房间为空，则使其5分钟后过期
 			if (getRoom.getUsers().size() == 0) {
 				setRoomExpire(roomId);
@@ -86,6 +87,7 @@ public class RoomCacheImpl implements RoomCache {
 		} finally {
 			roomLock.unlock();
 		}
+		return removedUser;
 	}
 
 	@Override

@@ -2,7 +2,6 @@
 import { defineStore } from 'pinia';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { useLocationStore } from './location';
-import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 
 export const useMapStore = defineStore('mapStore', {
 	state() {
@@ -47,14 +46,13 @@ export const useMapStore = defineStore('mapStore', {
 		},
 		/**
 		 * 缩放地图到用户
-		 * @param longitude 用户所在经度
-		 * @param latitude 用户所在纬度
+		 * @param longitude 用户所在经度（0表示缩放到自己）
+		 * @param latitude 用户所在纬度（0表示缩放到自己）
 		 */
 		zoomToUser(longitude = 0, latitude = 0) {
 			if (longitude === 0 && latitude === 0) {
 				const locationStore = useLocationStore();
-				if (locationStore.position.longitude === undefined || locationStore.position.latitude === undefined) {
-					showMessage('定位失败！请检查定位功能是否开启，以及是否授予浏览器定位权限！', MESSAGE_TYPE.error);
+				if (!locationStore.checkLocationEnabled(true)) {
 					return;
 				}
 				this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
