@@ -1,5 +1,6 @@
 #!/bin/sh
 COMMAND='java -jar '\
+'-Dserver.port=$APP_PORT '\
 '-Dspring.cloud.consul.host=$CONSUL_HOST '\
 '-Dspring.cloud.consul.port=$CONSUL_PORT '\
 '-Dspring.data.mongodb.host=$MONGO_HOST '\
@@ -8,7 +9,7 @@ COMMAND='java -jar '\
 '-Dspring.data.redis.port=$REDIS_PORT '\
 '-Dspring.mail.host=$EMAIL_SMTP_HOST '\
 '-Dspring.mail.username=$EMAIL_USER '\
-'-Dspring.mail.password=$EMAIL_PASSWORD '\
+'-Dspring.mail.password=$EMAIL_PASSWORD '
 
 if [ -n "$MONGO_USER" ]; then
 	COMMAND=$COMMAND'-Dspring.data.mongodb.username=$MONGO_USER '

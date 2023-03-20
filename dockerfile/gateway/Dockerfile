@@ -9,6 +9,8 @@ WORKDIR /app
 # 环境变量
 # 语言设置
 ENV LANG=C.UTF-8
+# 端口设定
+ENV APP_PORT=8800
 # Consul注册中心
 ENV CONSUL_HOST=127.0.0.1
 ENV CONSUL_PORT=8500

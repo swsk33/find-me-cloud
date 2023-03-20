@@ -147,6 +147,7 @@ docker pull swsk33/find-me-user
 
 ```bash
 docker run -id --name=find-me-user -p 8800:8800 \
+-e APP_PORT=8800 \
 -e CONSUL_HOST=Consul注册中心地址 \
 -e CONSUL_PORT=Consul注册中心端口 \
 -e MONGO_HOST=MongoDB数据库地址 \
@@ -164,22 +165,29 @@ swsk33/find-me-user
 
 将上述命令中环境变量传参部分改成自己实际的值，上述所有环境变量的意义和默认值如下：
 
-|    环境变量名     |           意义           |      默认值      |
-| :---------------: | :----------------------: | :--------------: |
-|   `CONSUL_HOST`   |    Consul注册中心地址    |   `127.0.0.1`    |
-|   `CONSUL_PORT`   |    Consul注册中心端口    |      `8500`      |
-|   `MONGO_HOST`    |    MongoDB数据库地址     |   `127.0.0.1`    |
-|   `MONGO_PORT`    |    MongoDB数据库端口     |     `27017`      |
-|   `MONGO_USER`    |   MongoDB数据库用户名    | `""`（空字符串） |
-| `MONGO_PASSWORD`  |    MongoDB数据库密码     | `""`（空字符串） |
-|   `REDIS_HOST`    |     Redis数据库地址      |   `127.0.0.1`    |
-|   `REDIS_PORT`    |     Redis数据库端口      |      `6379`      |
-| `REDIS_PASSWORD`  |     Redis数据库密码      | `""`（空字符串） |
-| `EMAIL_SMTP_HOST` |       邮箱SMTP地址       |  `smtp.163.com`  |
-|   `EMAIL_USER`    | 配置用于发通知邮件的邮箱 | `""`（空字符串） |
-| `EMAIL_PASSWORD`  |        邮箱授权码        | `""`（空字符串） |
+|    环境变量名     |           意义            |      默认值      |
+| :---------------: | :-----------------------: | :--------------: |
+|    `APP_PORT`     | 容器内Spring Boot程序端口 |      `8800`      |
+|   `CONSUL_HOST`   |    Consul注册中心地址     |   `127.0.0.1`    |
+|   `CONSUL_PORT`   |    Consul注册中心端口     |      `8500`      |
+|   `MONGO_HOST`    |     MongoDB数据库地址     |   `127.0.0.1`    |
+|   `MONGO_PORT`    |     MongoDB数据库端口     |     `27017`      |
+|   `MONGO_USER`    |    MongoDB数据库用户名    | `""`（空字符串） |
+| `MONGO_PASSWORD`  |     MongoDB数据库密码     | `""`（空字符串） |
+|   `REDIS_HOST`    |      Redis数据库地址      |   `127.0.0.1`    |
+|   `REDIS_PORT`    |      Redis数据库端口      |      `6379`      |
+| `REDIS_PASSWORD`  |      Redis数据库密码      | `""`（空字符串） |
+| `EMAIL_SMTP_HOST` |       邮箱SMTP地址        |  `smtp.163.com`  |
+|   `EMAIL_USER`    | 配置用于发通知邮件的邮箱  | `""`（空字符串） |
+| `EMAIL_PASSWORD`  |        邮箱授权码         | `""`（空字符串） |
 
-建议在命令行中，使用英文双引号`"`包围配置值，如果你要配置的某一项的值和上述的默认值相同，则可以在命令中省去这一条变量（若Redis或者MongoDB没有配置密码/认证，则可以省略Redis/MongoDB的用户和密码环境变量配置），**下面其它容器同样遵循这样的规则**。
+可见上述创建容器启动命令中，有许多需要作为配置传入的环境变量，我们需要注意下列事项：
+
+- 建议在命令行中，使用英文双引号`"`包围配置值
+- 如果你要配置的某一项的值和上述的默认值相同，则可以在命令中省去这一条变量（若Redis或者MongoDB没有配置密码/认证，则可以省略Redis/MongoDB的用户和密码环境变量配置）
+- 如果要`-p`暴露端口，则对应的宿主机端口必须要和容器内Spring Boot应用程序端口一致（可传入`APP_PORT`环境变量配置），否则会导致网关连不上对应服务模块
+
+**下面其它容器同样遵循这些注意事项！**
 
 ##### ② 会话模块
 
@@ -193,6 +201,7 @@ docker pull swsk33/find-me-session
 
 ```bash
 docker run -id --name=find-me-session -p 8800:8800 \
+-e APP_PORT=8800 \
 -e CONSUL_HOST=Consul注册中心地址 \
 -e CONSUL_PORT=Consul注册中心端口 \
 -e REDIS_HOST=Redis数据库地址 \
@@ -204,14 +213,15 @@ swsk33/find-me-session
 
 上述所有环境变量的意义和默认值如下：
 
-|    环境变量名    |        意义        |      默认值      |
-| :--------------: | :----------------: | :--------------: |
-|  `CONSUL_HOST`   | Consul注册中心地址 |   `127.0.0.1`    |
-|  `CONSUL_PORT`   | Consul注册中心端口 |      `8500`      |
-|   `REDIS_HOST`   |  Redis数据库地址   |   `127.0.0.1`    |
-|   `REDIS_PORT`   |  Redis数据库端口   |      `6379`      |
-| `REDIS_PASSWORD` |  Redis数据库密码   | `""`（空字符串） |
-|   `KAFKA_URL`    |  Kafka地址和端口   | `127.0.0.1:9092` |
+|    环境变量名    |           意义            |      默认值      |
+| :--------------: | :-----------------------: | :--------------: |
+|    `APP_PORT`    | 容器内Spring Boot程序端口 |      `8800`      |
+|  `CONSUL_HOST`   |    Consul注册中心地址     |   `127.0.0.1`    |
+|  `CONSUL_PORT`   |    Consul注册中心端口     |      `8500`      |
+|   `REDIS_HOST`   |      Redis数据库地址      |   `127.0.0.1`    |
+|   `REDIS_PORT`   |      Redis数据库端口      |      `6379`      |
+| `REDIS_PASSWORD` |      Redis数据库密码      | `""`（空字符串） |
+|   `KAFKA_URL`    |      Kafka地址和端口      | `127.0.0.1:9092` |
 
 ##### ③ 图片模块
 
@@ -225,6 +235,7 @@ docker pull swsk33/find-me-image
 
 ```bash
 docker run -id --name=find-me-image -p 8800:8800 \
+-e APP_PORT=8800 \
 -e CONSUL_HOST=Consul注册中心地址 \
 -e CONSUL_PORT=Consul注册中心端口 \
 -e MONGO_HOST=MongoDB数据库地址 \
@@ -236,14 +247,15 @@ swsk33/find-me-image
 
 上述所有环境变量的意义和默认值如下：
 
-|    环境变量名    |        意义         |      默认值      |
-| :--------------: | :-----------------: | :--------------: |
-|  `CONSUL_HOST`   | Consul注册中心地址  |   `127.0.0.1`    |
-|  `CONSUL_PORT`   | Consul注册中心端口  |      `8500`      |
-|   `MONGO_HOST`   |  MongoDB数据库地址  |   `127.0.0.1`    |
-|   `MONGO_PORT`   |  MongoDB数据库端口  |     `27017`      |
-|   `MONGO_USER`   | MongoDB数据库用户名 | `""`（空字符串） |
-| `MONGO_PASSWORD` |  MongoDB数据库密码  | `""`（空字符串） |
+|    环境变量名    |           意义            |      默认值      |
+| :--------------: | :-----------------------: | :--------------: |
+|    `APP_PORT`    | 容器内Spring Boot程序端口 |      `8800`      |
+|  `CONSUL_HOST`   |    Consul注册中心地址     |   `127.0.0.1`    |
+|  `CONSUL_PORT`   |    Consul注册中心端口     |      `8500`      |
+|   `MONGO_HOST`   |     MongoDB数据库地址     |   `127.0.0.1`    |
+|   `MONGO_PORT`   |     MongoDB数据库端口     |     `27017`      |
+|   `MONGO_USER`   |    MongoDB数据库用户名    | `""`（空字符串） |
+| `MONGO_PASSWORD` |     MongoDB数据库密码     | `""`（空字符串） |
 
 #### 3. 网关部署
 
@@ -257,6 +269,7 @@ docker pull swsk33/find-me-gateway
 
 ```bash
 docker run -id --name=find-me-gateway -p 8800:8800 \
+-e APP_PORT=8800 \
 -e CONSUL_HOST=Consul注册中心地址 \
 -e CONSUL_PORT=Consul注册中心端口 \
 -e REDIS_HOST=Redis数据库地址 \
@@ -267,13 +280,14 @@ swsk33/find-me-gateway
 
 上述所有环境变量的意义和默认值如下：
 
-|    环境变量名    |        意义        |      默认值      |
-| :--------------: | :----------------: | :--------------: |
-|  `CONSUL_HOST`   | Consul注册中心地址 |   `127.0.0.1`    |
-|  `CONSUL_PORT`   | Consul注册中心端口 |      `8500`      |
-|   `REDIS_HOST`   |  Redis数据库地址   |   `127.0.0.1`    |
-|   `REDIS_PORT`   |  Redis数据库端口   |      `6379`      |
-| `REDIS_PASSWORD` |  Redis数据库密码   | `""`（空字符串） |
+|    环境变量名    |           意义            |      默认值      |
+| :--------------: | :-----------------------: | :--------------: |
+|    `APP_PORT`    | 容器内Spring Boot程序端口 |      `8800`      |
+|  `CONSUL_HOST`   |    Consul注册中心地址     |   `127.0.0.1`    |
+|  `CONSUL_PORT`   |    Consul注册中心端口     |      `8500`      |
+|   `REDIS_HOST`   |      Redis数据库地址      |   `127.0.0.1`    |
+|   `REDIS_PORT`   |      Redis数据库端口      |      `6379`      |
+| `REDIS_PASSWORD` |      Redis数据库密码      | `""`（空字符串） |
 
 #### 4. Nginx服务器部署
 
