@@ -28,7 +28,7 @@ const MESSAGE_TYPE = {
  * @param {String} type 消息类型
  * @param  {Number} duration 持续时间（毫秒）
  */
-function showMessage(message, type = MESSAGE_TYPE.info, duration = 2000) {
+function showMessage(message, type = MESSAGE_TYPE.info, duration = 3000) {
 	ElMessage({
 		message: message,
 		type: type,
@@ -43,7 +43,7 @@ function showMessage(message, type = MESSAGE_TYPE.info, duration = 2000) {
  * @param {String} type 消息类型
  * @param {Number} duration 持续时间（毫秒）
  */
-function showNotification(title, message, type = MESSAGE_TYPE.success, duration = 2000) {
+function showNotification(title, message, type = MESSAGE_TYPE.success, duration = 3000) {
 	ElNotification({
 		title: title,
 		message: message,

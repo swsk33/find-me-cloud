@@ -53,7 +53,7 @@ export const useRoomStore = defineStore('roomStore', {
 			// 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
 			this.session = new WebSocket('wss://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
 			// 连接建立事件
-			this.session.addEventListener('open', (e) => {
+			this.session.addEventListener('open', async (e) => {
 				this.inTheRoom = true;
 				showMessage('已连接至房间！认证中...', MESSAGE_TYPE.warning);
 				// 执行认证
@@ -61,6 +61,11 @@ export const useRoomStore = defineStore('roomStore', {
 					type: messageStore.messageType.auth,
 					data: password
 				}));
+				// 打开实时位置发送
+				this.enablePositionSender();
+				// 最后设定房间信息
+				await this.getRoomInfo(id);
+				this.roomPassword = password;
 			});
 			// 收到消息事件
 			this.session.addEventListener('message', (e) => {
@@ -82,11 +87,6 @@ export const useRoomStore = defineStore('roomStore', {
 				showMessage('发生错误！', MESSAGE_TYPE.error);
 				console.error(e);
 			});
-			// 打开实时位置发送
-			this.enablePositionSender();
-			// 最后设定房间信息
-			await this.getRoomInfo(id);
-			this.roomPassword = password;
 		},
 		/**
 		 * 传入房间对象设定房间信息（会删除自己的信息）
@@ -117,9 +117,12 @@ export const useRoomStore = defineStore('roomStore', {
 		enablePositionSender() {
 			const locationStore = useLocationStore();
 			const userStore = useUserStore();
+			showMessage('开始共享位置...', MESSAGE_TYPE.warning);
+			// 设定计时器
 			this.positionSender = setInterval(() => {
 				// 如果会话意外结束或者已不在房间，就停止计时器
 				if (!this.inTheRoom || this.session == null) {
+					showMessage('停止共享位置...', MESSAGE_TYPE.warning);
 					clearInterval(this.positionSender);
 					return;
 				}
