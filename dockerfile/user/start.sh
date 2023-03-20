@@ -11,6 +11,10 @@ COMMAND='java -jar '\
 '-Dspring.mail.username=$EMAIL_USER '\
 '-Dspring.mail.password=$EMAIL_PASSWORD '
 
+if [ -n "$APP_HOST" ]; then
+	COMMAND=$COMMAND'-Dspring.cloud.consul.discovery.ip-address=$APP_HOST '
+fi
+
 if [ -n "$MONGO_USER" ]; then
 	COMMAND=$COMMAND'-Dspring.data.mongodb.username=$MONGO_USER '
 fi

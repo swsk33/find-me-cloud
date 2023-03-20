@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>com.gitee.swsk33</groupId>
 		<artifactId>find-me-service</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2</version>
 	</parent>
 	<artifactId>find-me-image</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>find-me-image</name>
 	<description>找到我-图片服务模块</description>
 

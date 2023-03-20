@@ -13,7 +13,7 @@ spring:
     redis:
       host: "127.0.0.1"
       port: 6379
-  #      password: "密码"
+      # password: "密码"
   cloud:
     # Consul配置
     consul:
@@ -23,6 +23,8 @@ spring:
         service-name: ${spring.application.name}
         heartbeat:
           enabled: true
+        prefer-ip-address: true
+        # ip-address: "服务器外网地址"
     # 注册到注册中心
     gateway:
       discovery:

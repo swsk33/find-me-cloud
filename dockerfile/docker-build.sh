@@ -20,4 +20,12 @@ else
 	docker build -f ./nginx/Dockerfile -t swsk33/find-me-web:$VERSION ./nginx
 	echo Nginx模块构建完成！
 	echo 全部镜像构建完成！
+	echo 创建latest Tag...
+	# 修改为latest
+	docker tag swsk33/find-me-web:$VERSION swsk33/find-me-web
+	docker tag swsk33/find-me-gateway:$VERSION swsk33/find-me-gateway
+	docker tag swsk33/find-me-user:$VERSION swsk33/find-me-user
+	docker tag swsk33/find-me-session:$VERSION swsk33/find-me-session
+	docker tag swsk33/find-me-image:$VERSION swsk33/find-me-image
+	echo 操作全部完成！
 fi

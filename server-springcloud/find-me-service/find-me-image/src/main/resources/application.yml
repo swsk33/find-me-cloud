@@ -27,12 +27,14 @@ spring:
         service-name: ${spring.application.name}
         heartbeat:
           enabled: true
+        prefer-ip-address: true
+        # ip-address: "服务器外网地址"
   # MongoDB配置
   data:
     mongodb:
       host: "127.0.0.1"
       port: 27017
       database: "find_me"
-      #      username: "用户名"
-      #      password: "密码"
+      # username: "用户名"
+      # password: "密码"
       authentication-database: "admin"

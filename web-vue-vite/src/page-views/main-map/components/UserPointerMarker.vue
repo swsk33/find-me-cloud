@@ -237,7 +237,7 @@ const refreshPointerHeight = () => {
 	// 如果该用户的高程信息不可用，也视为同一水准面
 	// 如果指针标记是自己，也视为同一水准面
 	// 最后，和自己上下误差三米之内算同一水平面
-	if (props.userId === 0 || locationStore.position.elevation == null || pointerData.position.elevation == null || Math.abs(locationStore.position.elevation - pointerData.position.elevation) <= 3) {
+	if (props.userId === 0 || locationStore.position.elevation == null || pointerData.position.elevation == null || Math.abs(locationStore.position.elevation - pointerData.position.elevation) <= 8) {
 		height.value = HEIGHT_STATUS.AT_SAME_LEVEL;
 		return;
 	}

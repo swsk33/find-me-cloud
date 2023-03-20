@@ -6,6 +6,10 @@ COMMAND='java -jar '\
 '-Dspring.data.mongodb.host=$MONGO_HOST '\
 '-Dspring.data.mongodb.port=$MONGO_PORT '
 
+if [ -n "$APP_HOST" ]; then
+	COMMAND=$COMMAND'-Dspring.cloud.consul.discovery.ip-address=$APP_HOST '
+fi
+
 if [ -n "$MONGO_USER" ]; then
 	COMMAND=$COMMAND'-Dspring.data.mongodb.username=$MONGO_USER '
 fi

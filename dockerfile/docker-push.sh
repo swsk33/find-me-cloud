@@ -12,12 +12,6 @@ else
 	docker push swsk33/find-me-user:$VERSION
 	docker push swsk33/find-me-session:$VERSION
 	docker push swsk33/find-me-image:$VERSION
-	# 修改为latest
-	docker tag swsk33/find-me-web:$VERSION swsk33/find-me-web
-	docker tag swsk33/find-me-gateway:$VERSION swsk33/find-me-gateway
-	docker tag swsk33/find-me-user:$VERSION swsk33/find-me-user
-	docker tag swsk33/find-me-session:$VERSION swsk33/find-me-session
-	docker tag swsk33/find-me-image:$VERSION swsk33/find-me-image
 	# 覆盖latest
 	docker push swsk33/find-me-web
 	docker push swsk33/find-me-gateway
