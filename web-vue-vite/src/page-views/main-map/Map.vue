@@ -112,7 +112,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { useMapStore } from '../../stores/map';
 import { useLocationStore } from '../../stores/location';
 import { useUserStore } from '../../stores/user';
-import { useClipboard, useDeviceOrientation, useGeolocation } from '@vueuse/core';
+import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
 import UserPointerMarker from './components/UserPointerMarker.vue';
 import { usePointerStore } from '../../stores/pointer';
@@ -120,6 +120,7 @@ import { useRoomStore } from '../../stores/room';
 import { REQUEST_METHOD, sendRequest } from '../../utils/request';
 import { MESSAGE_TYPE, showMessage } from '../../utils/element-message';
 import axios from 'axios';
+import ClipboardJS from 'clipboard';
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
@@ -130,9 +131,6 @@ const roomStore = useRoomStore();
 const selfMarker = ref(null);
 const othersMarker = ref([]);
 const uploadButton = ref(null);
-
-// 剪贴板
-const clipboard = useClipboard();
 
 // 响应式位置信息
 const WGS84Coordinates = useGeolocation().coords;
@@ -202,12 +200,8 @@ const joinRoom = async () => {
  * 复制房间信息方法
  */
 const copyRoomInfo = () => {
-	clipboard.copy('房间id：' + roomStore.roomInfo.id + '\n房间名：' + roomStore.roomInfo.name + '\n房间密码：' + roomStore.roomPassword + '\n\n' + location.host);
-	if (clipboard.copied) {
-		showMessage('复制成功！', MESSAGE_TYPE.success);
-	} else {
-		showMessage('复制失败！', MESSAGE_TYPE.error);
-	}
+	ClipboardJS.copy('房间id：' + roomStore.roomInfo.id + '\n房间名：' + roomStore.roomInfo.name + '\n房间密码：' + roomStore.roomPassword + '\n\n' + location.href);
+	showMessage('复制完成！', MESSAGE_TYPE.success);
 };
 
 // 监听位置信息
