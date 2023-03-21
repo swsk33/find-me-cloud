@@ -15,7 +15,7 @@ import java.util.Map;
 public class Room implements Serializable {
 
 	/**
-	 * 房间id（UUID）
+	 * 房间id（长度为10的字符串）
 	 */
 	private String id;
 

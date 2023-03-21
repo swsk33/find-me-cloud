@@ -11,7 +11,7 @@ export const usePointerStore = defineStore('userPointerStore', {
 			/**
 			 * 颜色列表
 			 */
-			colors: ['#2DB278', '#FF0000', '#FF006F', '#FFA200', '#8000FF']
+			colors: ['#2DB278', '#FF0000', '#FF006F', '#FFA200', '#8000FF', '#046B99', '#8E24FF', '#AB009F']
 		};
 	},
 	actions: {

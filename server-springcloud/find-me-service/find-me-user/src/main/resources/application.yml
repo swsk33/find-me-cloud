@@ -32,6 +32,7 @@ spring:
       port: 8500
       discovery:
         service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}-${spring.cloud.client.hostname}-${server.port}
         heartbeat:
           enabled: true
         prefer-ip-address: true

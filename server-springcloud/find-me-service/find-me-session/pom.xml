@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>com.gitee.swsk33</groupId>
 		<artifactId>find-me-service</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 	</parent>
 	<artifactId>find-me-session</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>find-me-session</name>
 	<description>找到我-会话服务模块</description>
 

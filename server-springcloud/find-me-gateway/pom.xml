@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.gitee.swsk33</groupId>
 		<artifactId>find-me-cloud</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 	</parent>
 	<artifactId>find-me-gateway</artifactId>
 	<version>1.0.2</version>

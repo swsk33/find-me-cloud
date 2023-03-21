@@ -20,11 +20,25 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	public Result<Room> createRoom(Room room) {
+		// 生成id
+		String roomId = IDGenerator.generateRoomID();
+		// 检查这个id是否重复（检查1000次）
+		Room tryGetRoom = roomCache.getRoom(roomId, false);
+		boolean idRepeat = true;
+		for (int i = 0; i < 1000; i++) {
+			if (tryGetRoom == null) {
+				idRepeat = false;
+				break;
+			}
+		}
+		if (idRepeat) {
+			return ResultFactory.createFailedResult("服务器资源不足！请稍后再试！");
+		}
 		// 设定id
-		room.setId(IDGenerator.generateUUID());
+		room.setId(roomId);
 		// 加密密码
 		room.setPassword(BCryptUtils.encode(room.getPassword()));
-		// 清空非必要数据
+		// 清空非必要数据和初始化
 		room.setRally(null);
 		room.setUsers(new ConcurrentHashMap<>());
 		// 储存房间
