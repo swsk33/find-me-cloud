@@ -33,6 +33,14 @@ public enum MessageType {
 	 */
 	AUTH,
 	/**
+	 * 认证成功消息
+	 */
+	AUTH_SUCCESS,
+	/**
+	 * 认证失败消息
+	 */
+	AUTH_FAILED,
+	/**
 	 * 操作成功
 	 */
 	SUCCESS,

@@ -28,6 +28,10 @@ export const useMessageStore = defineStore('messageStore', {
 				 */
 				roomChanged: 'ROOM_CHANGED',
 				/**
+				 * 用户发聊天消息
+				 */
+				chat: 'CHAT',
+				/**
 				 * 用户加入
 				 */
 				userJoin: 'USER_JOIN',
@@ -39,6 +43,14 @@ export const useMessageStore = defineStore('messageStore', {
 				 * 认证消息
 				 */
 				auth: 'AUTH',
+				/**
+				 * 认证成功
+				 */
+				authSuccess: 'AUTH_SUCCESS',
+				/**
+				 * 认证失败
+				 */
+				authFailed: 'AUTH_FAILED',
 				/**
 				 * 操作成功
 				 */
@@ -63,7 +75,17 @@ export const useMessageStore = defineStore('messageStore', {
 			// 所有策略函数都只有一个形参表示消息对象
 			// 普通告示消息处理函数
 			const notifyMessage = (messageObject) => {
-				showMessage(messageObject.data, messageObject.type === 'SUCCESS' ? MESSAGE_TYPE.success : MESSAGE_TYPE.error);
+				showMessage(messageObject.data, messageObject.type === this.messageType.success ? MESSAGE_TYPE.success : MESSAGE_TYPE.error, 5000);
+			};
+			// 认证失败消息处理函数
+			const authFailedMessage = (messageObject) => {
+				showMessage(messageObject.data, MESSAGE_TYPE.error, 3000);
+				// 主动断开连接
+				roomStore.disConnect(false);
+			};
+			const authSuccessMessage = (messageObject) => {
+				// 设置认证成功
+				roomStore.authed = true;
 			};
 			// 房间变化处理
 			const roomChange = (messageObject) => {
@@ -97,6 +119,8 @@ export const useMessageStore = defineStore('messageStore', {
 			// 存入所有策略
 			this.messageStrategy.set(this.messageType.success, notifyMessage);
 			this.messageStrategy.set(this.messageType.failed, notifyMessage);
+			this.messageStrategy.set(this.messageType.authSuccess, authSuccessMessage);
+			this.messageStrategy.set(this.messageType.authFailed, authFailedMessage);
 			this.messageStrategy.set(this.messageType.userJoin, userJoin);
 			this.messageStrategy.set(this.messageType.userExit, userExit);
 			this.messageStrategy.set(this.messageType.roomChanged, roomChange);

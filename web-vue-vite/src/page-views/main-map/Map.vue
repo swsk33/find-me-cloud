@@ -7,7 +7,7 @@
 			<el-button class="button create-room" type="success" v-if="!roomStore.inTheRoom" @click="showCreateDialog = true" size="small">创建房间</el-button>
 			<el-button class="button join-room" type="primary" v-if="!roomStore.inTheRoom" @click="showJoinDialog = true" size="small">加入房间</el-button>
 			<el-button class="button lookup-room" type="success" v-if="roomStore.inTheRoom" size="small" @click="showRoomInfoDialog = true" plain>查看房间</el-button>
-			<el-button class="button exit-room" type="danger" v-if="roomStore.inTheRoom" size="small" @click="roomStore.session.close()" plain>退出房间</el-button>
+			<el-button class="button exit-room" type="danger" v-if="roomStore.inTheRoom" size="small" @click="roomStore.disConnect" plain>退出房间</el-button>
 		</div>
 		<!-- 所有用户指针标识容器 -->
 		<div class="user-marker-container">
@@ -121,6 +121,9 @@ import { REQUEST_METHOD, sendRequest } from '../../utils/request';
 import { MESSAGE_TYPE, showMessage } from '../../utils/element-message';
 import axios from 'axios';
 import ClipboardJS from 'clipboard';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
@@ -275,6 +278,10 @@ const updateUser = async () => {
  * 用户退出登录
  */
 const userLogout = async () => {
+	// 如果在房间内，先退出房间
+	if (roomStore.inTheRoom) {
+		roomStore.disConnect();
+	}
 	const response = await sendRequest('/api/user/common/logout', REQUEST_METHOD.GET);
 	if (!response.success) {
 		showMessage(response.message, MESSAGE_TYPE.error);
@@ -282,7 +289,9 @@ const userLogout = async () => {
 	}
 	showMessage('退出登录成功！', MESSAGE_TYPE.success);
 	showUserInfoDialog.value = false;
-	location.reload();
+	// 刷新缓存
+	await userStore.checkLogin();
+	await router.push('/login');
 };
 
 onMounted(async () => {
@@ -307,6 +316,11 @@ onMounted(async () => {
 	userInfo.nickname = userStore.userData.nickname;
 	userInfo.email = userStore.userData.email;
 	previewImage.value = userStore.getUserAvatarURL(userStore.userData);
+	// 检查缓存，如果缓存房间信息不为空说明上次未正常退出
+	const roomCache = JSON.parse(localStorage.getItem('room'));
+	if (roomCache != null) {
+		roomStore.showSessionRestoreDialog();
+	}
 });
 </script>
 

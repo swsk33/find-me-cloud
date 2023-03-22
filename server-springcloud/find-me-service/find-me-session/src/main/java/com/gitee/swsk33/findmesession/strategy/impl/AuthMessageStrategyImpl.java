@@ -45,32 +45,32 @@ public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
 	public void handleMessage(Message<?> message, Session session, String roomId, long userId) throws Exception {
 		Room getRoom = roomCache.getRoom(roomId, false);
 		if (getRoom == null) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "房间不存在！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "房间不存在！"));
 			session.close();
 			return;
 		}
 		// 检测用户是否已经在房间
 		if (getRoom.getUsers().containsKey(userId)) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "已加入房间！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "已加入房间！"));
 			return;
 		}
 		// 比对密码
 		// 序列化内容体
 		String password = JacksonMapper.getMapper().convertValue(message.getData(), String.class);
 		if (!BCryptUtils.match(password, getRoom.getPassword())) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "房间密码错误！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "房间密码错误！"));
 			session.close();
 			return;
 		}
 		// 判断用户登录
 		Result<User> getUser = userClient.isLoginById(userId);
 		if (!getUser.isSuccess()) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "用户未登录！认证失败！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "用户未登录！认证失败！"));
 			session.close();
 			return;
 		}
 		// 成功加入房间
-		session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.SUCCESS, "加入房间成功！"));
+		session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_SUCCESS, "加入房间成功！"));
 		SessionWebSocketAPI.removeAutoExpireSession(userId);
 		log.info("用户id：" + userId + "的会话认证通过！已被确定为持久会话！");
 		// 把用户加入房间

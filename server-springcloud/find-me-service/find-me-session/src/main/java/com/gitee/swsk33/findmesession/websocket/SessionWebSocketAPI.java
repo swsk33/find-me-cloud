@@ -136,7 +136,7 @@ public class SessionWebSocketAPI {
 		Message<?> messageObject = JacksonMapper.getMapper().readValue(message, Message.class);
 		// 拦截未认证会话的非认证消息
 		if (notLoginSessions.containsKey(userId) && messageObject.getType() != MessageType.AUTH) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.FAILED, "未认证！"));
+			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "未认证！"));
 			return;
 		}
 		// 传入消息策略处理器

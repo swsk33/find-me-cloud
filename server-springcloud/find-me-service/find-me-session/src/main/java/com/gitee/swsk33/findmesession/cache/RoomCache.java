@@ -20,6 +20,7 @@ public interface RoomCache {
 
 	/**
 	 * 设定一个房间5分钟后过期
+	 * 记得先执行set修改操作再执行这个expire操作，因为set操作会将键的过期时间取消！
 	 *
 	 * @param roomId 房间id
 	 */

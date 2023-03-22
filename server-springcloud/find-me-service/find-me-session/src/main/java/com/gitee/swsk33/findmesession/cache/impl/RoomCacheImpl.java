@@ -83,12 +83,13 @@ public class RoomCacheImpl implements RoomCache {
 		try {
 			// 从房间移除用户
 			removedUser = getRoom.getUsers().remove(userId);
-			// 若房间为空，则使其5分钟后过期
+			// 存入Redis
+			addOrSetRoom(getRoom);
+			// 若房间为空，则使其五分钟后过期
+			// 记得先执行set操作再执行expire操作，因为set操作会将键的过期时间取消！
 			if (getRoom.getUsers().size() == 0) {
 				setRoomExpire(roomId);
 			}
-			// 存入Redis
-			addOrSetRoom(getRoom);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
