@@ -17,6 +17,8 @@
 		</div>
 		<!-- 集结点指针 -->
 		<RallyPointerMarker class="rally-point-marker" ref="rallyMarker"/>
+		<!-- 聊天组件 -->
+		<Chat class="chat"/>
 		<!-- 对话窗 -->
 		<!-- 创建房间 -->
 		<el-dialog class="create-room-dialog" v-model="showCreateDialog" width="75vw" top="30vh" :show-close="false" :center="true" title="创建房间">
@@ -119,14 +121,15 @@ import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
 import UserPointerMarker from './components/UserPointerMarker.vue';
 import RallyPointerMarker from './components/RallyPointMarker.vue';
-import { usePointerStore } from '../../stores/pointer';
-import { useRoomStore } from '../../stores/room';
+import Chat from './components/Chat.vue';
 import { REQUEST_METHOD, sendRequest } from '../../utils/request';
 import { MESSAGE_TYPE, showMessage } from '../../utils/element-message';
 import axios from 'axios';
 import ClipboardJS from 'clipboard';
 import { useRouter } from 'vue-router';
 import { useMessageStore } from '../../stores/message';
+import { usePointerStore } from '../../stores/pointer';
+import { useRoomStore } from '../../stores/room';
 
 const router = useRouter();
 

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 import { useRoomStore } from './room';
 import { usePointerStore } from './pointer';
+import { useChatStore } from './chat';
 
 export const useMessageStore = defineStore('messageStore', {
 	state() {
@@ -72,6 +73,7 @@ export const useMessageStore = defineStore('messageStore', {
 			// 使用store
 			const roomStore = useRoomStore();
 			const pointerStore = usePointerStore();
+			const chatStore = useChatStore();
 			// 所有策略函数都只有一个形参表示消息对象
 			// 普通告示消息处理函数
 			const notifyMessage = (messageObject) => {
@@ -121,6 +123,16 @@ export const useMessageStore = defineStore('messageStore', {
 				// 设定对应用户位置
 				pointerStore.addOrSetPointer(messageObject.senderId, messageObject.data);
 			};
+			// 接收到聊天消息处理
+			const chatMessageReceive = (messageObject) => {
+				// 消息存入聊天记录
+				chatStore.message.push(messageObject);
+				// 如果聊天框未处于打开状态，则设置存在消息未读并播放提示音
+				if (!chatStore.chatDialogShow) {
+					chatStore.existNotRead = true;
+					chatStore.tipAudio.play().then();
+				}
+			};
 			// 存入所有策略
 			this.messageStrategy.set(this.messageType.success, notifyMessage);
 			this.messageStrategy.set(this.messageType.failed, notifyMessage);
@@ -131,6 +143,7 @@ export const useMessageStore = defineStore('messageStore', {
 			this.messageStrategy.set(this.messageType.roomChanged, roomChange);
 			this.messageStrategy.set(this.messageType.rallyChanged, rallyChange);
 			this.messageStrategy.set(this.messageType.positionChanged, userPositionChange);
+			this.messageStrategy.set(this.messageType.chat, chatMessageReceive);
 		},
 		/**
 		 * 执行消息处理策略

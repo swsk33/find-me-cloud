@@ -7,6 +7,7 @@ import { useMessageStore } from './message';
 import { useLocationStore } from './location';
 import { usePointerStore } from './pointer';
 import { ElMessageBox } from 'element-plus';
+import { useChatStore } from './chat';
 
 export const useRoomStore = defineStore('roomStore', {
 	state() {
@@ -54,6 +55,7 @@ export const useRoomStore = defineStore('roomStore', {
 			}
 			const userStore = useUserStore();
 			const messageStore = useMessageStore();
+			const chatStore = useChatStore();
 			// 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
 			this.session = new WebSocket('wss://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
 			// 连接建立事件
@@ -83,6 +85,8 @@ export const useRoomStore = defineStore('roomStore', {
 				this.authed = false;
 				// 重置集结点设定状态
 				this.settingRally = false;
+				// 清空聊天数据
+				chatStore.$reset();
 				showMessage('已断开和房间连接！', MESSAGE_TYPE.warning);
 				// 判断如果没有正常退出，则弹出异常恢复窗口（如果本地房间缓存不为空）
 				const roomCache = JSON.parse(localStorage.getItem('room'));
