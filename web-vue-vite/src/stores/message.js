@@ -92,6 +92,11 @@ export const useMessageStore = defineStore('messageStore', {
 				// 设定到房间对象
 				roomStore.setRoomInfo(messageObject.data);
 			};
+			const rallyChange = (messageObject) => {
+				// 设定集结点
+				roomStore.roomInfo.rally = messageObject.data;
+				showMessage('集结点变化！', MESSAGE_TYPE.success);
+			};
 			// 用户加入处理
 			const userJoin = (messageObject) => {
 				// 用户加入指针列表
@@ -124,6 +129,7 @@ export const useMessageStore = defineStore('messageStore', {
 			this.messageStrategy.set(this.messageType.userJoin, userJoin);
 			this.messageStrategy.set(this.messageType.userExit, userExit);
 			this.messageStrategy.set(this.messageType.roomChanged, roomChange);
+			this.messageStrategy.set(this.messageType.rallyChanged, rallyChange);
 			this.messageStrategy.set(this.messageType.positionChanged, userPositionChange);
 		},
 		/**

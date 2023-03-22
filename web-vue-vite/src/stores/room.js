@@ -30,7 +30,11 @@ export const useRoomStore = defineStore('roomStore', {
 			/**
 			 * 当前会话对象（WebSocket对象）
 			 */
-			session: undefined
+			session: undefined,
+			/**
+			 * 表示当前是否正在设定集结点
+			 */
+			settingRally: false
 		};
 	},
 	actions: {
@@ -77,6 +81,8 @@ export const useRoomStore = defineStore('roomStore', {
 				this.inTheRoom = false;
 				// 重置为未认证
 				this.authed = false;
+				// 重置集结点设定状态
+				this.settingRally = false;
 				showMessage('已断开和房间连接！', MESSAGE_TYPE.warning);
 				// 判断如果没有正常退出，则弹出异常恢复窗口（如果本地房间缓存不为空）
 				const roomCache = JSON.parse(localStorage.getItem('room'));

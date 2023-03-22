@@ -7,6 +7,7 @@
 			<el-button class="button create-room" type="success" v-if="!roomStore.inTheRoom" @click="showCreateDialog = true" size="small">创建房间</el-button>
 			<el-button class="button join-room" type="primary" v-if="!roomStore.inTheRoom" @click="showJoinDialog = true" size="small">加入房间</el-button>
 			<el-button class="button lookup-room" type="success" v-if="roomStore.inTheRoom" size="small" @click="showRoomInfoDialog = true" plain>查看房间</el-button>
+			<el-button class="button lookup-room" type="primary" v-if="roomStore.inTheRoom" size="small" @click="setRally" plain>放集结点</el-button>
 			<el-button class="button exit-room" type="danger" v-if="roomStore.inTheRoom" size="small" @click="roomStore.disConnect" plain>退出房间</el-button>
 		</div>
 		<!-- 所有用户指针标识容器 -->
@@ -14,6 +15,8 @@
 			<UserPointerMarker ref="selfMarker" class="user-self" :user-id="0"/>
 			<UserPointerMarker ref="othersMarker" class="user-in-room" v-for="(value, key, index) in pointerStore.userInRoom" :user-id="key" :key="key"/>
 		</div>
+		<!-- 集结点指针 -->
+		<RallyPointerMarker class="rally-point-marker" ref="rallyMarker"/>
 		<!-- 对话窗 -->
 		<!-- 创建房间 -->
 		<el-dialog class="create-room-dialog" v-model="showCreateDialog" width="75vw" top="30vh" :show-close="false" :center="true" title="创建房间">
@@ -115,6 +118,7 @@ import { useUserStore } from '../../stores/user';
 import { useDeviceOrientation, useGeolocation } from '@vueuse/core';
 import Location from './components/Location.vue';
 import UserPointerMarker from './components/UserPointerMarker.vue';
+import RallyPointerMarker from './components/RallyPointMarker.vue';
 import { usePointerStore } from '../../stores/pointer';
 import { useRoomStore } from '../../stores/room';
 import { REQUEST_METHOD, sendRequest } from '../../utils/request';
@@ -122,6 +126,7 @@ import { MESSAGE_TYPE, showMessage } from '../../utils/element-message';
 import axios from 'axios';
 import ClipboardJS from 'clipboard';
 import { useRouter } from 'vue-router';
+import { useMessageStore } from '../../stores/message';
 
 const router = useRouter();
 
@@ -130,13 +135,23 @@ const locationStore = useLocationStore();
 const userStore = useUserStore();
 const pointerStore = usePointerStore();
 const roomStore = useRoomStore();
+const messageStore = useMessageStore();
 
 const selfMarker = ref(null);
 const othersMarker = ref([]);
 const uploadButton = ref(null);
+const rallyMarker = ref(null);
 
 // 响应式位置信息
 const WGS84Coordinates = useGeolocation().coords;
+
+// 监听位置信息
+watch(WGS84Coordinates, () => {
+	// 实时地转换经纬度坐标
+	locationStore.convertToGCJ02(WGS84Coordinates.value.longitude, WGS84Coordinates.value.latitude);
+	// 实时赋值高度变化
+	locationStore.position.elevation = WGS84Coordinates.value.altitude;
+});
 
 // 对话窗状态
 const showCreateDialog = ref(false);
@@ -207,13 +222,13 @@ const copyRoomInfo = () => {
 	showMessage('复制完成！', MESSAGE_TYPE.success);
 };
 
-// 监听位置信息
-watch(WGS84Coordinates, () => {
-	// 实时地转换经纬度坐标
-	locationStore.convertToGCJ02(WGS84Coordinates.value.longitude, WGS84Coordinates.value.latitude);
-	// 实时赋值高度变化
-	locationStore.position.elevation = WGS84Coordinates.value.altitude;
-});
+/**
+ * 设定集结点方法
+ */
+const setRally = () => {
+	roomStore.settingRally = true;
+	showMessage('点击地图上的某处以设定集结点...', MESSAGE_TYPE.success);
+};
 
 /**
  * 获取选择的文件并显示到预览图
@@ -301,10 +316,32 @@ onMounted(async () => {
 	locationStore.position.orientation = useDeviceOrientation().alpha;
 	// 给地图注册事件：当地图被移动、缩放时，刷新地图上所有指针位置
 	mapStore.map.on('mapmove', (e) => {
+		// 刷新用户标志
 		selfMarker.value.refreshPointerPosition();
 		for (let item of othersMarker.value) {
 			item.refreshPointerPosition();
 		}
+		// 刷新集结点指针
+		rallyMarker.value.refreshPosition();
+	});
+	// 地图被点击时，如果是设定集结点状态，则执行设定集结点操作
+	mapStore.map.on('click', (e) => {
+		if (!roomStore.settingRally) {
+			return;
+		}
+		// 设定集结点
+		roomStore.roomInfo.rally = {
+			longitude: e.lnglat.getLng(),
+			latitude: e.lnglat.getLat()
+		};
+		// 广播出去
+		roomStore.session.send(JSON.stringify({
+			type: messageStore.messageType.rallyChanged,
+			senderId: userStore.userData.id,
+			data: roomStore.roomInfo.rally
+		}));
+		roomStore.settingRally = false;
+		showMessage('放置完成！', MESSAGE_TYPE.success);
 	});
 	// 等待3秒后缩放至用户
 	setTimeout(() => {

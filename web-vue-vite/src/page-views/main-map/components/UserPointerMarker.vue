@@ -3,7 +3,7 @@
 	<!-- 如果位置信息不可用，就先不显示指针 -->
 	<div class="user-pointer" :style="{left: x + 'px', top: y + 'px'}" v-if="pointerData.position != null && pointerData.position.longitude != null && pointerData.position.latitude != null">
 		<!-- 形态1：在屏幕范围内时，显示指针本身 -->
-		<div class="user-marker" @click="dialogShow = true" v-if="status === POINTER_STATUS.IN_SCREEN">
+		<div class="user-marker" @click="dialogShow = true" v-if="status === pointerStore.POINTER_STATUS.IN_SCREEN">
 			<div class="marker-base" :style="{transform: 'rotate(' + (360 - pointerData.position.orientation) + 'deg)'}">
 				<div class="circle" :style="{backgroundColor: pointerData.color, boxShadow: pointerData.color + ' 0 0 6px'}">
 				</div>
@@ -15,15 +15,15 @@
 			<img class="user-avatar" :src="userStore.getUserAvatarURL(userData)" alt="无法显示"/>
 		</div>
 		<!-- 形态2：屏幕范围外时，显示昵称标识 -->
-		<div class="out-pointer" @click="zoomToPointer" v-if="status !== POINTER_STATUS.IN_SCREEN" :style="{color: pointerData.color}">
-			<Top v-if="status === POINTER_STATUS.TOP" class="arrow top"/>
-			<Bottom v-if="status === POINTER_STATUS.BOTTOM" class="arrow bottom"/>
-			<Back v-if="status === POINTER_STATUS.LEFT" class="arrow left"/>
-			<Right v-if="status === POINTER_STATUS.RIGHT" class="arrow right"/>
-			<TopLeft v-if="status === POINTER_STATUS.TOP_LEFT" class="arrow top-left"/>
-			<TopRight v-if="status === POINTER_STATUS.TOP_RIGHT" class="arrow top-right"/>
-			<BottomLeft v-if="status === POINTER_STATUS.BOTTOM_LEFT" class="arrow bottom-left"/>
-			<BottomRight v-if="status === POINTER_STATUS.BOTTOM_RIGHT" class="arrow bottom-right"/>
+		<div class="out-pointer" @click="zoomToPointer" v-if="status !== pointerStore.POINTER_STATUS.IN_SCREEN" :style="{color: pointerData.color}">
+			<Top v-if="status === pointerStore.POINTER_STATUS.TOP" class="arrow top"/>
+			<Bottom v-if="status === pointerStore.POINTER_STATUS.BOTTOM" class="arrow bottom"/>
+			<Back v-if="status === pointerStore.POINTER_STATUS.LEFT" class="arrow left"/>
+			<Right v-if="status === pointerStore.POINTER_STATUS.RIGHT" class="arrow right"/>
+			<TopLeft v-if="status === pointerStore.POINTER_STATUS.TOP_LEFT" class="arrow top-left"/>
+			<TopRight v-if="status === pointerStore.POINTER_STATUS.TOP_RIGHT" class="arrow top-right"/>
+			<BottomLeft v-if="status === pointerStore.POINTER_STATUS.BOTTOM_LEFT" class="arrow bottom-left"/>
+			<BottomRight v-if="status === pointerStore.POINTER_STATUS.BOTTOM_RIGHT" class="arrow bottom-right"/>
 			<div class="text" :style="{backgroundColor: pointerData.color}" v-if="userData != null">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
 		</div>
 		<!-- 详细信息对话框 -->
@@ -100,47 +100,9 @@ const x = ref(0);
 const y = ref(0);
 // 指针位置状态
 const status = ref(0);
-// 指针位置状态枚举
-const POINTER_STATUS = {
-	/**
-	 * 指针在屏幕内
-	 */
-	IN_SCREEN: 0,
-	/**
-	 * 屏幕左侧之外
-	 */
-	LEFT: 1,
-	/**
-	 * 屏幕右侧之外
-	 */
-	RIGHT: 2,
-	/**
-	 * 屏幕下方之外
-	 */
-	BOTTOM: 3,
-	/**
-	 * 屏幕上方之外
-	 */
-	TOP: 4,
-	/**
-	 * 屏幕左上之外
-	 */
-	TOP_LEFT: 5,
-	/**
-	 * 屏幕右上之外
-	 */
-	TOP_RIGHT: 6,
-	/**
-	 * 屏幕左下之外
-	 */
-	BOTTOM_LEFT: 7,
-	/**
-	 * 屏幕右下之外
-	 */
-	BOTTOM_RIGHT: 8
-};
 // 高程状态（这个指针对应用户相对于自己的高程）
 const height = ref(0);
+
 // 高程状态枚举
 const HEIGHT_STATUS = {
 	/**
@@ -161,72 +123,10 @@ const HEIGHT_STATUS = {
 const dialogShow = ref(false);
 
 /**
- * 刷新指针自身位置
+ * 刷新指针本身的位置
  */
 const refreshPointerPosition = () => {
-	const point = mapStore.coordinateToMapContainerPositionCSS(pointerData.position.longitude, pointerData.position.latitude);
-	// 判断指针位置状态
-	// 指针在屏幕左侧时
-	if (point[0] < 0) {
-		x.value = 0;
-		// 判断纵坐标
-		// 左上方
-		if (point[1] < 0) {
-			status.value = POINTER_STATUS.TOP_LEFT;
-			y.value = 0;
-			return;
-		}
-		// 左边
-		if (point[1] >= 0 && point[1] <= mapStore.size.height) {
-			status.value = POINTER_STATUS.LEFT;
-			y.value = point[1];
-			return;
-		}
-		// 左下方
-		status.value = POINTER_STATUS.BOTTOM_LEFT;
-		y.value = mapStore.size.height - 76;
-		return;
-	}
-	// 指针横坐标在屏幕宽度范围内
-	if (point[0] >= 0 && point[0] <= mapStore.size.width) {
-		x.value = point[0];
-		// 判断纵坐标
-		// 上方
-		if (point[1] < 0) {
-			status.value = POINTER_STATUS.TOP;
-			y.value = 0;
-			return;
-		}
-		// 屏幕中
-		if (point[1] >= 0 && point[1] <= mapStore.size.height) {
-			status.value = POINTER_STATUS.IN_SCREEN;
-			x.value = point[0] - 24;
-			y.value = point[1] - 24;
-			return;
-		}
-		// 下方
-		status.value = POINTER_STATUS.BOTTOM;
-		y.value = mapStore.size.height - 76;
-		return;
-	}
-	// 否则，就是在右边
-	x.value = mapStore.size.width - 148;
-	// 判断纵坐标
-	// 右上方
-	if (point[1] < 0) {
-		status.value = POINTER_STATUS.TOP_RIGHT;
-		y.value = 0;
-		return;
-	}
-	// 右侧
-	if (point[1] >= 0 && point[1] <= mapStore.size.height) {
-		status.value = POINTER_STATUS.RIGHT;
-		y.value = point[1];
-		return;
-	}
-	// 右下方
-	status.value = POINTER_STATUS.BOTTOM_RIGHT;
-	y.value = mapStore.size.height - 76;
+	pointerStore.computeAndSetPointer(x, y, pointerData.position.longitude, pointerData.position.latitude, status, 148, 76, 24, 24);
 };
 
 /**
@@ -236,7 +136,7 @@ const refreshPointerHeight = () => {
 	// 如果自己高程信息不可用，则全部视为同一水准面
 	// 如果该用户的高程信息不可用，也视为同一水准面
 	// 如果指针标记是自己，也视为同一水准面
-	// 最后，和自己上下误差三米之内算同一水平面
+	// 最后，和自己上下误差8米之内算同一水平面
 	if (props.userId === 0 || locationStore.position.elevation == null || pointerData.position.elevation == null || Math.abs(locationStore.position.elevation - pointerData.position.elevation) <= 8) {
 		height.value = HEIGHT_STATUS.AT_SAME_LEVEL;
 		return;
@@ -287,7 +187,7 @@ const getHeading = computed(() => {
 	}
 });
 
-// 导出函数
+// 导出变量
 defineExpose({ refreshPointerPosition });
 
 onMounted(() => {
