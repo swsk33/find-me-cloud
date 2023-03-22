@@ -9,11 +9,8 @@ import org.springframework.stereotype.Component;
 
 import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
-/**
- * 实时位置改变的消息策略
- */
 @Component
-public class PositionMessageStrategy implements RealTimeMessageStrategy {
+public class ChatMessageStrategyImpl implements RealTimeMessageStrategy {
 
 	@Autowired
 	private KafkaTemplate<String, Message<?>> kafkaTemplate;

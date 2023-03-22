@@ -12,8 +12,8 @@ import java.io.IOException;
 public class LongToStringSerializer extends JsonSerializer<Long> {
 
 	@Override
-	public void serialize(Long aLong, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-		jsonGenerator.writeString(String.valueOf(aLong));
+	public void serialize(Long longData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+		jsonGenerator.writeString(String.valueOf(longData));
 	}
 
 }

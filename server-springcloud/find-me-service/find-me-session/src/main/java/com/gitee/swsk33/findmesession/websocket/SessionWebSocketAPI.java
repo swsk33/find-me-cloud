@@ -106,8 +106,9 @@ public class SessionWebSocketAPI {
 	/**
 	 * 连接关闭调用的方法
 	 */
+	@SuppressWarnings("unchecked")
 	@OnClose
-	public void onClose(Session session, @PathParam("roomId") String roomId, @PathParam("userId") long userId) {
+	public void onClose(@PathParam("roomId") String roomId, @PathParam("userId") long userId) {
 		log.info("用户(id:" + userId + ")断开连接！");
 		// 使用Spring上下文容器手动获取Bean，下面也一样
 		KafkaConsumerContext kafkaConsumerContext = applicationContext.getBean(KafkaConsumerContext.class);

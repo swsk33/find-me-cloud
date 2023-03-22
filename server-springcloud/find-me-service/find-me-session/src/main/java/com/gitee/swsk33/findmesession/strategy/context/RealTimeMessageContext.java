@@ -4,6 +4,7 @@ import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmeentity.param.MessageType;
 import com.gitee.swsk33.findmesession.strategy.RealTimeMessageStrategy;
 import com.gitee.swsk33.findmesession.strategy.impl.AuthMessageStrategyImpl;
+import com.gitee.swsk33.findmesession.strategy.impl.ChatMessageStrategyImpl;
 import com.gitee.swsk33.findmesession.strategy.impl.PositionMessageStrategy;
 import com.gitee.swsk33.findmesession.strategy.impl.RallyChangeMessageStrategyImpl;
 import jakarta.annotation.PostConstruct;
@@ -36,6 +37,7 @@ public class RealTimeMessageContext {
 		STRATEGY_MAP.put(MessageType.AUTH, beanFactory.getBean(AuthMessageStrategyImpl.class));
 		STRATEGY_MAP.put(MessageType.POSITION_CHANGED, beanFactory.getBean(PositionMessageStrategy.class));
 		STRATEGY_MAP.put(MessageType.RALLY_CHANGED, beanFactory.getBean(RallyChangeMessageStrategyImpl.class));
+		STRATEGY_MAP.put(MessageType.CHAT, beanFactory.getBean(ChatMessageStrategyImpl.class));
 		log.info("所有消息处理策略初始化完成！");
 	}
 

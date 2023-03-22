@@ -17,6 +17,10 @@ public enum MessageType {
 	 */
 	ROOM_CHANGED,
 	/**
+	 * 用户聊天消息
+	 */
+	CHAT,
+	/**
 	 * 用户加入
 	 */
 	USER_JOIN,
