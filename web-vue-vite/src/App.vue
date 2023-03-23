@@ -7,6 +7,7 @@
 import { useRouter } from 'vue-router';
 import { onBeforeMount } from 'vue';
 import { useUserStore } from './stores/user';
+import { MESSAGE_TYPE, showNotification } from './utils/element-message';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -17,6 +18,12 @@ onBeforeMount(async () => {
 	if (!userStore.isLogin) {
 		// 未登录跳转到登录页
 		await router.push('/login');
+	}
+	// 检测浏览器UA
+	if (navigator.userAgent.toLowerCase().indexOf('windows') !== -1) {
+		setTimeout(() => {
+			showNotification('提示', '当前使用的是电脑端，可能定位不精确！', MESSAGE_TYPE.warning, 6000);
+		}, 500);
 	}
 });
 </script>

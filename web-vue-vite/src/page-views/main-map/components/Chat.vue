@@ -1,6 +1,6 @@
 <!-- 聊天组件 -->
 <template>
-	<div class="chat">
+	<div class="chat" v-if="roomStore.inTheRoom">
 		<!-- 聊天按钮 -->
 		<div class="chat-button" @click="openDialog">
 			<img src="../../../assets/icon/chat.png" alt="无法显示"/>
@@ -16,11 +16,14 @@
 			</template>
 			<ul class="content-box">
 				<li class="message" v-for="item in chatStore.message">
-					<div :class="{'user-info': true, 'user-info-me': item.senderId === 0}">
+					<div class="user-info-you" v-if="item.senderId !== 0">
 						<img class="avatar" :style="{borderColor: getUserAvatarBorderColor(item.senderId)}" :src="getUserAvatar(item.senderId)" alt="无法显示"/>
 						<div class="nickname">{{ getUserNickname(item.senderId) }}</div>
 					</div>
-					<div :class="{content: true, 'content-me': item.senderId === 0}">{{ item.data }}</div>
+					<div :class="{'content': true, 'content-me': item.senderId === 0}">{{ item.data }}</div>
+					<div class="user-info-me" v-if="item.senderId === 0">
+						<img class="avatar" :style="{borderColor: getUserAvatarBorderColor(item.senderId)}" :src="getUserAvatar(item.senderId)" alt="无法显示"/>
+					</div>
 				</li>
 			</ul>
 			<template #footer>
@@ -74,9 +77,11 @@ const sendMessage = () => {
 	// 发送消息
 	chatMessage.senderId = userStore.userData.id;
 	roomStore.session.send(JSON.stringify(chatMessage));
-	// 存入消息列表
-	chatMessage.senderId = 0;
-	chatStore.message.push(chatMessage);
+	// 存入消息列表（复制）
+	chatStore.message.push({
+		senderId: 0,
+		data: chatMessage.data
+	});
 	// 清空输入框
 	chatMessage.data = '';
 };
@@ -168,17 +173,17 @@ const getUserAvatarBorderColor = computed(() => {
 
 			.message {
 				position: relative;
-				display: inline-block;
+				display: flex;
+				justify-content: space-between;
 				width: 95%;
 				left: 2.5%;
 				height: auto;
 				border-bottom: #67c23a 1px dashed;
 
-				.user-info {
+				.user-info-you, .user-info-me {
 					position: relative;
 					width: 15%;
-					height: 36px;
-					top: 8px;
+					height: auto;
 
 					.avatar {
 						position: absolute;
@@ -186,29 +191,33 @@ const getUserAvatarBorderColor = computed(() => {
 						border-radius: 50%;
 						border-style: solid;
 						border-width: 2px;
+						top: 9px;
 					}
 
 					.nickname {
 						position: absolute;
 						font-size: 11px;
-						left: 36px;
+						top: 9px;
+						left: 39px;
+						height: 12px;
+						line-height: 12px;
 						width: 250%;
+						color: palevioletred;
 						white-space: nowrap;
 						overflow: hidden;
 						text-overflow: ellipsis;
 					}
 				}
 
-				// 表示自己的消息的样式-头像组件
-				.user-info-me {
-					right: 10px;
-				}
-
 				.content {
 					position: relative;
-					left: 15%;
-					width: 80%;
-					bottom: 10px;
+					width: 83%;
+					padding: 24px 8px 24px;
+				}
+
+				.content-me {
+					padding-top: 13px;
+					text-align: right;
 				}
 			}
 		}

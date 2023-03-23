@@ -8,7 +8,7 @@ export const useChatStore = defineStore('chatStore', {
 			/**
 			 * 存放所有的聊天消息记录
 			 */
-			message: [{senderId: 0, data: '哈哈哈哈哈哈或少时诵诗书所所所所所所所所所所所所所所所所所所所所所所所所所所所所所所所'}],
+			message: [],
 			/**
 			 * 是否存在未读消息
 			 */
