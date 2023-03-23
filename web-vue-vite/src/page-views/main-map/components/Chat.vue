@@ -94,7 +94,14 @@ const sendMessage = () => {
  */
 const getUserAvatar = computed(() => {
 	return (id) => {
-		return id === 0 ? userStore.getUserAvatarURL(userStore.userData) : userStore.getUserAvatarURL(roomStore.roomInfo.users[id]);
+		if (id === 0) {
+			return userStore.getUserAvatarURL(userStore.userData);
+		}
+		const user = roomStore.roomInfo.users[id];
+		if (user == null) {
+			return userStore.getUserAvatarURL(null);
+		}
+		return userStore.getUserAvatarURL(user);
 	};
 });
 
@@ -104,7 +111,14 @@ const getUserAvatar = computed(() => {
  */
 const getUserNickname = computed(() => {
 	return (id) => {
-		return id === 0 ? userStore.userData.nickname : roomStore.roomInfo.users[id].nickname;
+		if (id === 0) {
+			return userStore.userData.nickname;
+		}
+		const user = roomStore.roomInfo.users[id];
+		if (user == null) {
+			return '已退出';
+		}
+		return user.nickname;
 	};
 });
 
@@ -114,7 +128,14 @@ const getUserNickname = computed(() => {
  */
 const getUserAvatarBorderColor = computed(() => {
 	return (id) => {
-		return id === 0 ? '#2973ff' : pointerStore.userInRoom[id].color;
+		if (id === 0) {
+			return '#2973ff';
+		}
+		const userPointer = pointerStore.userInRoom[id];
+		if (userPointer == null) {
+			return '#23a900';
+		}
+		return userPointer.color;
 	};
 });
 </script>
