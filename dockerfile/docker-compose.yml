@@ -71,7 +71,7 @@ services:
   kafka:
     image: swsk33/kafka-standalone
     environment:
-      - ZOOKEEPER_HOST=zookeeper
+      - ZOOKEEPER_URL=zookeeper:2181
       - KAFKA_HOST=kafka
     links:
       - zookeeper
