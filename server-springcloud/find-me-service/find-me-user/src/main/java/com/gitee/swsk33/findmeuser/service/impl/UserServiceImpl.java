@@ -7,14 +7,13 @@ import com.gitee.swsk33.findmeentity.factory.ResultFactory;
 import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeentity.param.CommonValue;
 import com.gitee.swsk33.findmeentity.param.EmailType;
-import com.gitee.swsk33.findmefeign.feignclient.AvatarClient;
-import com.gitee.swsk33.findmeuser.cache.EmailCodeCache;
 import com.gitee.swsk33.findmeuser.mongodao.UserDAO;
-import com.gitee.swsk33.findmeuser.service.EmailService;
+import com.gitee.swsk33.findmeuser.service.AvatarService;
 import com.gitee.swsk33.findmeuser.service.UserService;
 import com.gitee.swsk33.findmeutility.util.BCryptUtils;
 import com.gitee.swsk33.findmeutility.util.IDGenerator;
 import com.gitee.swsk33.findmeutility.util.MongoUpdateUtils;
+import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +24,10 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Autowired
-	private AvatarClient avatarClient;
+	private EmailVerifyCodeService emailCodeService;
 
 	@Autowired
-	private EmailCodeCache emailCodeCache;
-
-	@Autowired
-	private EmailService emailService;
+	private AvatarService avatarService;
 
 	@Override
 	public Result<Void> register(User user) {
@@ -102,7 +98,7 @@ public class UserServiceImpl implements UserService {
 		// 如果用户头像被修改，则删除上一个头像
 		if (!StrUtil.isEmpty(user.getAvatarId()) && !StrUtil.isEmpty(getUser.getAvatarId())) {
 			// 删除旧的
-			avatarClient.delete(getUser.getAvatarId());
+			avatarService.delete(getUser.getAvatarId());
 		}
 		// 执行修改
 		userDAO.update(user);
@@ -112,13 +108,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result<Void> resetPassword(String email, int code, String password) {
+	public Result<Void> resetPassword(String email, String code, String password) {
 		User getUser = userDAO.getByUsernameOrEmail(email);
 		if (getUser == null) {
 			return ResultFactory.createFailedResult("该邮箱未被注册！");
 		}
 		// 校验验证码
-		if (!emailCodeCache.checkCodeInCache(email, EmailType.PASSWORD_RESET, code)) {
+		if (!emailCodeService.verifyCode(EmailType.PASSWORD_RESET, getUser.getId(), code)) {
 			return ResultFactory.createFailedResult("验证码错误！");
 		}
 		// 重置密码
@@ -126,8 +122,6 @@ public class UserServiceImpl implements UserService {
 		user.setId(getUser.getId());
 		user.setPassword(BCryptUtils.encode(password));
 		userDAO.update(user);
-		// 通知用户
-		emailService.sendTextEmail(getUser.getEmail(), "FindMe - 密码重置", "您的密码已经重置成功！请牢记您的新密码！");
 		return ResultFactory.createVoidSuccessResult("重置密码成功！");
 	}
 

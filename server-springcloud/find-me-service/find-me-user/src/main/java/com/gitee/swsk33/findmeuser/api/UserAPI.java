@@ -45,7 +45,7 @@ public class UserAPI {
 	}
 
 	@PutMapping("/reset-password/{code}")
-	public Result<Void> resetPassword(@PathVariable int code, @RequestBody User user) {
+	public Result<Void> resetPassword(@PathVariable String code, @RequestBody User user) {
 		// 传入的user中需要email字段和password字段不为空，password表示新的密码
 		if (user == null || StrUtil.isEmpty(user.getEmail()) || StrUtil.isEmpty(user.getPassword())) {
 			return ResultFactory.createFailedResult("邮箱或者新密码不能为空！");

@@ -1,0 +1,2 @@
+# 设定shell脚本文本文件换行符始终保持LF
+*.sh text eol=lf

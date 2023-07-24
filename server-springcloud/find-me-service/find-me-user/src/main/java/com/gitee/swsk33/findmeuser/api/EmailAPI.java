@@ -1,5 +1,6 @@
 package com.gitee.swsk33.findmeuser.api;
 
+import com.gitee.swsk33.findmeentity.factory.ResultFactory;
 import com.gitee.swsk33.findmeentity.model.Result;
 import com.gitee.swsk33.findmeuser.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ public class EmailAPI {
 
 	@GetMapping("/password-reset-code/{email}")
 	public Result<Void> sendPasswordResetMail(@PathVariable String email) {
-		return emailService.requestPasswordResetEmail(email);
+		emailService.requestPasswordResetEmail(email);
+		return ResultFactory.createVoidSuccessResult("邮件验证码已发送！");
 	}
 
 }

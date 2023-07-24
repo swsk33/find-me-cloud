@@ -42,6 +42,6 @@ public interface UserService {
 	 * @param password 新密码
 	 * @return 结果
 	 */
-	Result<Void> resetPassword(String email, int code, String password);
+	Result<Void> resetPassword(String email, String code, String password);
 
 }

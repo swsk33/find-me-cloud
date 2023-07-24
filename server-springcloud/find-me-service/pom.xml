@@ -3,11 +3,10 @@
 	<parent>
 		<artifactId>find-me-cloud</artifactId>
 		<groupId>com.gitee.swsk33</groupId>
-		<version>1.2.0</version>
+		<version>2.0.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>find-me-service</artifactId>
-	<version>1.2.0</version>
 	<packaging>pom</packaging>
 	<description>找到我-全部业务模块父模块</description>
 
@@ -49,11 +48,16 @@
 			<groupId>com.gitee.swsk33</groupId>
 			<artifactId>find-me-utility</artifactId>
 		</dependency>
+
+		<!-- 自动配置一些Bean -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-bean-config</artifactId>
+		</dependency>
 	</dependencies>
 
 	<modules>
 		<module>find-me-user</module>
 		<module>find-me-session</module>
-		<module>find-me-image</module>
 	</modules>
 </project>

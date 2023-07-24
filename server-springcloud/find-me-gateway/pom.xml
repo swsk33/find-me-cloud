@@ -4,10 +4,9 @@
 	<parent>
 		<groupId>com.gitee.swsk33</groupId>
 		<artifactId>find-me-cloud</artifactId>
-		<version>1.2.0</version>
+		<version>2.0.0</version>
 	</parent>
 	<artifactId>find-me-gateway</artifactId>
-	<version>1.0.2</version>
 	<name>find-me-gateway</name>
 	<description>找到我-网关</description>
 
@@ -30,10 +29,16 @@
 			<artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
 		</dependency>
 
-		<!-- Sa-Token整合Redis（使用jackson序列化方式） -->
+		<!-- Sa-Token整合Redis -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
-			<artifactId>sa-token-dao-redis-jackson</artifactId>
+			<artifactId>sa-token-redis</artifactId>
+		</dependency>
+
+		<!-- 一些Bean的配置 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>find-me-bean-config</artifactId>
 		</dependency>
 	</dependencies>
 

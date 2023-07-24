@@ -5,6 +5,11 @@ server:
     max-http-form-post-size: 20MB
 
 spring:
+  # 最大文件大小配置
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   # JSON配置
   jackson:
     default-property-inclusion: non_null
@@ -13,18 +18,6 @@ spring:
   # 应用程序名
   application:
     name: find-me-user
-  # 邮箱配置
-  mail:
-    host: "smtp.163.com"
-    username: ""
-    password: ""
-    default-encoding: "UTF-8"
-    properties:
-      "[mail.smtp.socketFactory.class]": "javax.net.ssl.SSLSocketFactory"
-      "[mail.smtp.socketFactory.port]": 465
-      "[mail.smtp.auth]": true
-      "[mail.smtp.starttls.enable]": true
-      "[mail.smtp.starttls.required]": true
   cloud:
     # Consul配置
     consul:
@@ -51,6 +44,30 @@ spring:
       host: "127.0.0.1"
       port: 6379
       # password: "密码"
+
+io:
+  github:
+    swsk33:
+      # 文件上传配置
+      file-lift:
+        core:
+          storage-method: "mongodb"
+          size-limit: 5120
+          auto-rename-format: "snow_flake"
+          allowed-formats:
+            - "jpg"
+            - "jpeg"
+            - "png"
+            - "gif"
+            - "bpm"
+      # 邮件验证码配置
+      code-post:
+        core:
+          smtp-host: "smtp.163.com"
+          email: "你的邮箱"
+          password: "你的邮箱密码（或者是授权码）"
+          code-storage: "redis"
+          site-name: "Find-Me"
 
 # Sa-Token配置
 sa-token:
