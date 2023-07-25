@@ -36,11 +36,13 @@ public class UserAPI {
 		return userService.login(user);
 	}
 
-	@PutMapping("/update")
+	@PatchMapping("/update")
 	public Result<Void> update(@RequestBody @Validated(ValidationRules.UpdateData.class) User user, BindingResult result) {
 		if (result.hasErrors()) {
 			return ResultFactory.createFailedResult(result.getFieldError().getDefaultMessage());
 		}
+		// 用户更新时，移除前端传来的房间模板列表信息
+		user.setRoomTemplates(null);
 		return userService.update(user);
 	}
 

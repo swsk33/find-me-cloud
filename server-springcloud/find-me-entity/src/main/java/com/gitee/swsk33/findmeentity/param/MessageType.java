@@ -33,6 +33,10 @@ public enum MessageType {
 	 */
 	AUTH,
 	/**
+	 * 房间模板的加入认证消息
+	 */
+	TEMPLATE_AUTH,
+	/**
 	 * 认证成功消息
 	 */
 	AUTH_SUCCESS,

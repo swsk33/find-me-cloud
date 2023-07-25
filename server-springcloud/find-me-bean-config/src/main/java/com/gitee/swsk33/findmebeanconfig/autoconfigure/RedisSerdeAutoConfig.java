@@ -8,8 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -17,15 +18,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import static com.gitee.swsk33.findmebeanconfig.param.ConfigPropertyPrefix.PREFIX;
-
 /**
- * Redis序列化配置
+ * Redis序列化配置<br>
+ * 该配置将在Spring Data Redis自动配置之前完成自动配置，防止出现RedisTemplate的冲突情况
  */
 @Slf4j
 @Configuration
 @ConditionalOnClass(RedisTemplate.class)
-@ConditionalOnProperty(prefix = PREFIX, value = "config-redis-serde", matchIfMissing = true)
+@AutoConfigureBefore(RedisAutoConfiguration.class)
 public class RedisSerdeAutoConfig {
 
 	@Bean

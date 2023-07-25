@@ -14,6 +14,7 @@ import java.lang.annotation.*;
 @Component
 public @interface RedisCache {
 
-	@AliasFor(annotation = Component.class) String value() default "";
+	@AliasFor(annotation = Component.class)
+	String value() default "";
 
 }

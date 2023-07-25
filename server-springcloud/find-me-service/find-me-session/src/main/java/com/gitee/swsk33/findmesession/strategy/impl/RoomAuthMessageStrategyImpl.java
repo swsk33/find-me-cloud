@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 认证类型消息处理器（最终加入房间逻辑也包含在此）
+ * 普通房间的认证类型消息处理器
  */
 @Slf4j
 @Component
-public class AuthMessageStrategyImpl implements RealTimeMessageStrategy {
+public class RoomAuthMessageStrategyImpl implements RealTimeMessageStrategy {
 
 	@Autowired
 	private RoomService roomService;

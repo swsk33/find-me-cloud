@@ -56,10 +56,8 @@ public class RoomCacheImpl implements RoomCache {
 		try {
 			// 用户加入房间
 			getRoom.getUsers().put(user.getId(), user);
-			// 对于有人的房间取消其过期
-			if (getRoom.getUsers().size() > 0) {
-				cancelRoomExpire(roomId);
-			}
+			// 此时房间有人了，取消其过期
+			cancelRoomExpire(roomId);
 			// 存入Redis
 			addOrSetRoom(getRoom);
 		} catch (Exception e) {

@@ -27,7 +27,7 @@ public interface RoomService {
 	Result<Room> getRoom(String id);
 
 	/**
-	 * 用户加入至现有房间
+	 * 用户加入至现有房间（普通房间认证以及用户加入房间等一系列操作的逻辑）
 	 *
 	 * @param roomId   房间id
 	 * @param password 房间密码

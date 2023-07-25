@@ -1,10 +1,13 @@
 package com.gitee.swsk33.findmeentity.dataobject;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
  * 房间模板
  */
+@Data
 public class RoomTemplate {
 
 	/**

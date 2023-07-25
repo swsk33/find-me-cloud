@@ -8,12 +8,13 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 用户类
  */
 @Data
-@JsonIgnoreProperties(allowSetters = true, value = {"password"})
+@JsonIgnoreProperties(allowSetters = true, value = "password")
 public class User implements Serializable {
 
 	/**
@@ -54,5 +55,10 @@ public class User implements Serializable {
 	 * 头像id（可以用于获取头像）
 	 */
 	private String avatarId;
+
+	/**
+	 * 该用户的房间模板列表
+	 */
+	private List<RoomTemplate> roomTemplates;
 
 }
