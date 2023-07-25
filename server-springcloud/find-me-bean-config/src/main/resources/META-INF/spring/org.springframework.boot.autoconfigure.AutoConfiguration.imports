@@ -1,3 +1,4 @@
 com.gitee.swsk33.findmebeanconfig.autoconfigure.RedisSerdeAutoConfig
 com.gitee.swsk33.findmebeanconfig.autoconfigure.WebSocketAutoConfig
 com.gitee.swsk33.findmebeanconfig.autoconfigure.SaTokenFilterConfigure
+com.gitee.swsk33.findmebeanconfig.autoconfigure.KafkaAdminAutoConfig

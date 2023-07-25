@@ -13,7 +13,7 @@ public class WebSocketAutoConfig {
 
 	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
-		log.info("WebSocket服务已完成配置！");
+		log.info("WebSocket服务已完成自动配置！");
 		return new ServerEndpointExporter();
 	}
 

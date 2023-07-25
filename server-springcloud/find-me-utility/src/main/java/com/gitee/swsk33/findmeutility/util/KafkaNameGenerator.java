@@ -21,4 +21,17 @@ public class KafkaNameGenerator {
 		return PREFIX + name;
 	}
 
+	/**
+	 * 传入一个已经加上了前缀的topic名或者groupId，恢复为去除前缀后的名字
+	 *
+	 * @param kafkaName 已加上前缀的名字
+	 * @return 去掉前缀后的名字，如果不是以该前缀开头，返回null
+	 */
+	public static String recoverName(String kafkaName) {
+		if (!kafkaName.startsWith(PREFIX)) {
+			return null;
+		}
+		return kafkaName.substring(PREFIX.length());
+	}
+
 }

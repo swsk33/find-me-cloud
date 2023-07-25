@@ -55,7 +55,7 @@ public class RedisSerdeAutoConfig {
 		// value和hashValue通常使用JSON序列化方式
 		redisTemplate.setValueSerializer(jsonSerializer);
 		redisTemplate.setHashValueSerializer(jsonSerializer);
-		log.info("已完成Redis序列化配置！");
+		log.info("Redis序列化方式已完成自动配置！");
 		return redisTemplate;
 	}
 

@@ -19,7 +19,7 @@ public class SaTokenFilterConfigure {
 
 	@Bean
 	public SaReactorFilter getSaReactorFilter() {
-		log.info("已完成Sa-Token网关鉴权拦截器配置！");
+		log.info("Sa-Token网关鉴权拦截器已完成自动配置！");
 		return new SaReactorFilter()
 				// 拦截全部地址
 				.addInclude("/**")

@@ -1,13 +1,10 @@
 package com.gitee.swsk33.findmesession.websocket;
 
-import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.factory.MessageFactory;
 import com.gitee.swsk33.findmeentity.model.Message;
-import com.gitee.swsk33.findmeentity.model.Room;
 import com.gitee.swsk33.findmeentity.param.MessageType;
-import com.gitee.swsk33.findmesession.cache.RoomCache;
-import com.gitee.swsk33.findmesession.context.KafkaConsumerContext;
 import com.gitee.swsk33.findmesession.encoder.MessageEncoder;
+import com.gitee.swsk33.findmesession.service.RoomService;
 import com.gitee.swsk33.findmesession.strategy.context.RealTimeMessageContext;
 import com.gitee.swsk33.findmeutility.singleton.JacksonMapper;
 import jakarta.websocket.*;
@@ -16,22 +13,19 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
-
 /**
- * 会话WebSocket接口
+ * 用于普通房间的WebSocket会话端口
  */
+@Slf4j
 @Component
 @ServerEndpoint(value = "/ws/session/room/{roomId}/{userId}", encoders = MessageEncoder.class)
-@Slf4j
-public class SessionWebSocketAPI {
+public class RoomSessionAPI {
 
 	/**
 	 * 用于延时断开为认证的会话的定时器
@@ -52,7 +46,7 @@ public class SessionWebSocketAPI {
 
 	@Autowired
 	public void setApplicationContext(ApplicationContext applicationContext) {
-		SessionWebSocketAPI.applicationContext = applicationContext;
+		RoomSessionAPI.applicationContext = applicationContext;
 	}
 
 	/**
@@ -98,7 +92,7 @@ public class SessionWebSocketAPI {
 	 */
 	@OnOpen
 	public void onOpen(Session session, @PathParam("userId") long userId) {
-		log.info("用户(id:" + userId + ")加入会话！等待用户认证...");
+		log.info("用户(id:{})加入会话！等待用户认证...", userId);
 		// 刚建立的会话是未认证会话，2分钟后自动过期
 		addAutoExpireSession(session, userId);
 	}
@@ -106,25 +100,12 @@ public class SessionWebSocketAPI {
 	/**
 	 * 连接关闭调用的方法
 	 */
-	@SuppressWarnings("unchecked")
 	@OnClose
 	public void onClose(@PathParam("roomId") String roomId, @PathParam("userId") long userId) {
-		log.info("用户(id:" + userId + ")断开连接！");
+		log.info("用户(id:{})断开连接！", userId);
 		// 使用Spring上下文容器手动获取Bean，下面也一样
-		KafkaConsumerContext kafkaConsumerContext = applicationContext.getBean(KafkaConsumerContext.class);
-		RoomCache roomCache = applicationContext.getBean(RoomCache.class);
-		KafkaTemplate<String, Message<?>> kafkaTemplate = applicationContext.getBean("kafkaTemplate", KafkaTemplate.class);
-		// 关闭用户对应的kafka消费者及其任务
-		kafkaConsumerContext.removeConsumerTask(userId);
-		// 从房间移除用户
-		User removedUser = roomCache.removeUserFromRoom(roomId, userId);
-		Room getRoom = roomCache.getRoom(roomId, true);
-		// 如果被移除的用户为null，说明这个用户本来就没加入房间，不进行通知
-		// 如果房间还有人，则发送房间变化和用户退出通知
-		if (removedUser != null && getRoom.getUsers().size() > 0) {
-			kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, getRoom));
-			kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.USER_EXIT, userId, removedUser));
-		}
+		RoomService roomService = applicationContext.getBean(RoomService.class);
+		roomService.removeUserFromRoom(roomId, userId);
 	}
 
 	/**
@@ -149,7 +130,7 @@ public class SessionWebSocketAPI {
 	 */
 	@OnError
 	public void onError(Throwable error, @PathParam("userId") long userId) {
-		log.error("会话发生错误！用户id：" + userId);
+		log.error("会话发生错误！用户id：{}", userId);
 		error.printStackTrace();
 	}
 

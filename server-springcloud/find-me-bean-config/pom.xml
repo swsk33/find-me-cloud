@@ -38,6 +38,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- 集成Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Sa-Token网关集成鉴权 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>

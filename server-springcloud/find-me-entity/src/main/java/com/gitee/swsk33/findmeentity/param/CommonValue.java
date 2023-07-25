@@ -10,16 +10,4 @@ public class CommonValue {
 	 */
 	public static final String SA_USER_SESSION_INFO_KEY = "userSession";
 
-	/**
-	 * 分布式锁名
-	 */
-	public static class LockName {
-
-		/**
-		 * 房间变化
-		 */
-		public static final String ROOM_CHANGE = "room_change";
-
-	}
-
 }

@@ -3,7 +3,7 @@ package com.gitee.swsk33.findmesession.cache.impl;
 import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.model.RallyPoint;
 import com.gitee.swsk33.findmeentity.model.Room;
-import com.gitee.swsk33.findmeentity.param.CommonValue;
+import com.gitee.swsk33.findmeentity.param.RedissonLockName;
 import com.gitee.swsk33.findmesession.cache.RoomCache;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class RoomCacheImpl implements RoomCache {
 			log.error("待操作房间不存在！");
 		}
 		// 分布式锁上锁
-		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);
+		RLock roomLock = redissonClient.getLock(RedissonLockName.ROOM_CHANGE);
 		roomLock.lock();
 		try {
 			// 用户加入房间
@@ -78,7 +78,7 @@ public class RoomCacheImpl implements RoomCache {
 		}
 		User removedUser = null;
 		// 分布式锁上锁
-		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);
+		RLock roomLock = redissonClient.getLock(RedissonLockName.ROOM_CHANGE);
 		roomLock.lock();
 		try {
 			// 从房间移除用户
@@ -102,7 +102,7 @@ public class RoomCacheImpl implements RoomCache {
 	public void setRallyPoint(String roomId, RallyPoint rallyPoint) {
 		Room getRoom = getRoom(roomId, false);
 		// 分布式锁上锁
-		RLock roomLock = redissonClient.getLock(CommonValue.LockName.ROOM_CHANGE);
+		RLock roomLock = redissonClient.getLock(RedissonLockName.ROOM_CHANGE);
 		roomLock.lock();
 		try {
 			getRoom.setRally(rallyPoint);
