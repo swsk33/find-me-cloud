@@ -25,12 +25,20 @@ spring:
           enabled: true
         prefer-ip-address: true
         # ip-address: "服务器外网地址"
-  # Redis
   data:
+    # Redis
     redis:
       host: "127.0.0.1"
       port: 6379
       # password: "密码"
+    # MongoDB配置
+    mongodb:
+      host: "127.0.0.1"
+      port: 27017
+      database: "find_me"
+      # username: "用户名"
+      # password: "密码"
+      authentication-database: "admin"
   # Kafka
   kafka:
     bootstrap-servers: "127.0.0.1:9092"
@@ -41,7 +49,4 @@ spring:
       key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
       properties:
-        spring:
-          json:
-            trusted:
-              packages: "*"
+        "[spring.json.trusted.packages]": "*"

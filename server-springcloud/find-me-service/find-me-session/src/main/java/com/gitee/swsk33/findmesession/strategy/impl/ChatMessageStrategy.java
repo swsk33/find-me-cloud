@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateName;
 
 @Component
-public class ChatMessageStrategyImpl implements RealTimeMessageStrategy {
+public class ChatMessageStrategy implements RealTimeMessageStrategy {
 
 	@Autowired
 	private KafkaTemplate<String, Message<?>> kafkaTemplate;

@@ -105,7 +105,7 @@ public class RoomSessionAPI {
 		log.info("用户(id:{})断开连接！", userId);
 		// 使用Spring上下文容器手动获取Bean，下面也一样
 		RoomService roomService = applicationContext.getBean(RoomService.class);
-		roomService.removeUserFromRoom(roomId, userId);
+		roomService.userExitRoom(roomId, userId);
 	}
 
 	/**

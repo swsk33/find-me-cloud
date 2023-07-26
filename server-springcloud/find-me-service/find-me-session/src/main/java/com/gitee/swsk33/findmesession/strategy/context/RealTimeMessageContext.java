@@ -3,10 +3,7 @@ package com.gitee.swsk33.findmesession.strategy.context;
 import com.gitee.swsk33.findmeentity.model.Message;
 import com.gitee.swsk33.findmeentity.param.MessageType;
 import com.gitee.swsk33.findmesession.strategy.RealTimeMessageStrategy;
-import com.gitee.swsk33.findmesession.strategy.impl.RoomAuthMessageStrategyImpl;
-import com.gitee.swsk33.findmesession.strategy.impl.ChatMessageStrategyImpl;
-import com.gitee.swsk33.findmesession.strategy.impl.PositionMessageStrategy;
-import com.gitee.swsk33.findmesession.strategy.impl.RallyChangeMessageStrategyImpl;
+import com.gitee.swsk33.findmesession.strategy.impl.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +17,8 @@ import java.util.Map;
 /**
  * 实时消息的策略上下文容器
  */
-@Component
 @Slf4j
+@Component
 public class RealTimeMessageContext {
 
 	/**
@@ -34,10 +31,11 @@ public class RealTimeMessageContext {
 
 	@PostConstruct
 	private void initStrategy() {
-		STRATEGY_MAP.put(MessageType.AUTH, beanFactory.getBean(RoomAuthMessageStrategyImpl.class));
+		STRATEGY_MAP.put(MessageType.AUTH, beanFactory.getBean(RoomAuthMessageStrategy.class));
+		STRATEGY_MAP.put(MessageType.TEMPLATE_AUTH, beanFactory.getBean(RoomTemplateAuthStrategy.class));
 		STRATEGY_MAP.put(MessageType.POSITION_CHANGED, beanFactory.getBean(PositionMessageStrategy.class));
-		STRATEGY_MAP.put(MessageType.RALLY_CHANGED, beanFactory.getBean(RallyChangeMessageStrategyImpl.class));
-		STRATEGY_MAP.put(MessageType.CHAT, beanFactory.getBean(ChatMessageStrategyImpl.class));
+		STRATEGY_MAP.put(MessageType.RALLY_CHANGED, beanFactory.getBean(RallyChangeMessageStrategy.class));
+		STRATEGY_MAP.put(MessageType.CHAT, beanFactory.getBean(ChatMessageStrategy.class));
 		log.info("所有消息处理策略初始化完成！");
 	}
 

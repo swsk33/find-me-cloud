@@ -17,8 +17,6 @@ import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-
 @Component
 public class UserServiceImpl implements UserService {
 
@@ -48,8 +46,6 @@ public class UserServiceImpl implements UserService {
 		user.setId(IDGenerator.generateSnowflakeId());
 		// 加密密码
 		user.setPassword(BCryptUtils.encode(user.getPassword()));
-		// 初始化一些默认信息
-		user.setRoomTemplates(new ArrayList<>());
 		userDAO.add(user);
 		return ResultFactory.createVoidSuccessResult("注册成功！");
 	}

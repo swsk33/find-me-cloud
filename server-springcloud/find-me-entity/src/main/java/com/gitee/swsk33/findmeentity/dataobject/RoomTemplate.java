@@ -1,5 +1,7 @@
 package com.gitee.swsk33.findmeentity.dataobject;
 
+import com.gitee.swsk33.findmeentity.param.ValidationRules;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -18,7 +20,13 @@ public class RoomTemplate {
 	/**
 	 * 模板名字
 	 */
+	@NotEmpty(groups = ValidationRules.AddData.class, message = "房间模板名称不能为空！")
 	private String name;
+
+	/**
+	 * 模板的创建者
+	 */
+	private long masterId;
 
 	/**
 	 * 拥有该模板的用户id

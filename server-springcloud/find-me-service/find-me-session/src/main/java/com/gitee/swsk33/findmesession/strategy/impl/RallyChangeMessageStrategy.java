@@ -20,7 +20,7 @@ import static com.gitee.swsk33.findmeutility.util.KafkaNameGenerator.generateNam
  */
 @Slf4j
 @Component
-public class RallyChangeMessageStrategyImpl implements RealTimeMessageStrategy {
+public class RallyChangeMessageStrategy implements RealTimeMessageStrategy {
 
 	@Resource
 	private KafkaTemplate<String, Message<?>> kafkaTemplate;

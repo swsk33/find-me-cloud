@@ -15,6 +15,7 @@ import com.gitee.swsk33.findmesession.websocket.RoomSessionAPI;
 import com.gitee.swsk33.findmeutility.util.BCryptUtils;
 import com.gitee.swsk33.findmeutility.util.IDGenerator;
 import jakarta.annotation.Resource;
+import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -70,7 +71,7 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	public Result<Void> userJoinRoom(String roomId, String password, long userId) {
+	public Result<Void> auth(String roomId, String password, long userId) {
 		// 首先判断房间是否存在
 		Room getRoom = roomCache.getRoom(roomId, false);
 		if (getRoom == null) {
@@ -90,20 +91,35 @@ public class RoomServiceImpl implements RoomService {
 		if (!BCryptUtils.match(password, getRoom.getPassword())) {
 			return ResultFactory.createFailedResult("房间密码错误！");
 		}
-		// 加入成功，将用户加入房间，并发送广播
+		return ResultFactory.createVoidSuccessResult("认证成功！可以加入房间！");
+	}
+
+	@Override
+	public Result<Void> userJoinRoom(String roomId, long userId, Session session) {
+		// 根据id获取用户，从session缓存获取
+		Result<User> getUser = userClient.isLoginById(userId);
+		// 取消会话过期
 		RoomSessionAPI.removeAutoExpireSession(userId);
-		log.info("用户id：" + userId + "的会话认证通过！已被确定为持久会话！");
+		log.info("用户id：{}的会话认证通过！已被确定为持久会话！", userId);
 		// 把用户加入房间
 		roomCache.addUserToRoom(roomId, getUser.getData());
 		// 广播消息-房间改变，用户加入
 		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.ROOM_CHANGED, userId, roomCache.getRoom(roomId, true)));
 		kafkaTemplate.send(generateName(roomId), MessageFactory.createMessage(MessageType.USER_JOIN, userId, getUser.getData()));
 		log.info("用户：" + getUser.getData().getNickname() + "成功加入房间！");
+		// 认证成功，发送消息
+		session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_SUCCESS, "加入房间成功！"));
+		try {
+			// 与此同时，为该用户创建一个专用的kafka消费者用于接受该房间内其他用户信息
+			kafkaConsumerContext.addConsumerTask(roomId, userId, session);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return ResultFactory.createVoidSuccessResult("加入房间成功！");
 	}
 
 	@Override
-	public Result<Void> removeUserFromRoom(String roomId, long userId) {
+	public Result<Void> userExitRoom(String roomId, long userId) {
 		// 关闭用户对应的kafka消费者及其任务
 		kafkaConsumerContext.removeConsumerTask(userId);
 		// 从房间移除用户
