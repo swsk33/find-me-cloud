@@ -24,4 +24,14 @@ public class RedisKeyGenerator {
 		return PREFIX + "session-room:" + roomId;
 	}
 
+	/**
+	 * 生成用于存放房间模板分析信息的键
+	 *
+	 * @param shareId 房间模板分享信息id（分享密钥）
+	 * @return 键
+	 */
+	public static String generateRoomTemplateShareKey(String shareId) {
+		return PREFIX + "room-template-share:" + shareId;
+	}
+
 }

@@ -32,14 +32,9 @@ public class RoomTemplateAPI {
 		return roomTemplateService.deleteTemplate(id);
 	}
 
-	@PutMapping("/add-user/template-id/{templateId}/user-id/{userId}")
-	public Result<Void> addUserToTemplate(@PathVariable String templateId, @PathVariable long userId) {
-		return roomTemplateService.addUserToTemplate(templateId, userId);
-	}
-
-	@DeleteMapping("/delete-user/template-id/{templateId}/user-id/{userId}")
-	public Result<Void> removeUserFromTemplate(@PathVariable String templateId, @PathVariable long userId) {
-		return roomTemplateService.removeUserFromTemplate(templateId, userId);
+	@DeleteMapping("/remove-current-user/{templateId}")
+	public Result<Void> removeUserFromTemplate(@PathVariable String templateId) {
+		return roomTemplateService.removeLoginUserFromTemplate(templateId);
 	}
 
 	@GetMapping("/get-by-user/{userId}")

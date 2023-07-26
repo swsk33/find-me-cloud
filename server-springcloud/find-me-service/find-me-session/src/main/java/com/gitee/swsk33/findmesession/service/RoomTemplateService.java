@@ -40,22 +40,12 @@ public interface RoomTemplateService {
 	Result<Void> authAndJoinThroughTemplate(String templateId, long userId, Session session);
 
 	/**
-	 * 把一个用户加入到房间模板的拥有者列表
+	 * 把当前登录的用户从指定的模板的拥有者列表中移除（如果当前登录的用户存在于指定模板的拥有者列表的话）
 	 *
-	 * @param templateId 房间模板id
-	 * @param userId     用户id
+	 * @param templateId 模板id
 	 * @return 结果
 	 */
-	Result<Void> addUserToTemplate(String templateId, long userId);
-
-	/**
-	 * 把一个用户从房间模板拥有者列表移除
-	 *
-	 * @param templateId 房间模板id
-	 * @param userId     用户id
-	 * @return 结果
-	 */
-	Result<Void> removeUserFromTemplate(String templateId, long userId);
+	Result<Void> removeLoginUserFromTemplate(String templateId);
 
 	/**
 	 * 获取一个用户所拥有的模板

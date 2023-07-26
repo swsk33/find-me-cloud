@@ -56,7 +56,7 @@ public class UserAPI {
 	/**
 	 * 判断用户是否登录
 	 *
-	 * @return 若登录则会返回用户信息
+	 * @return 若登录则会返回当前登录的用户信息
 	 */
 	@GetMapping("/is-login")
 	public Result<User> isLogin() {

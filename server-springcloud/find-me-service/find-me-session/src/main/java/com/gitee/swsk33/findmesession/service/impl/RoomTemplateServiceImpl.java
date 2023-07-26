@@ -1,6 +1,5 @@
 package com.gitee.swsk33.findmesession.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.findmeentity.dataobject.RoomTemplate;
 import com.gitee.swsk33.findmeentity.dataobject.User;
 import com.gitee.swsk33.findmeentity.factory.ResultFactory;
@@ -45,24 +44,36 @@ public class RoomTemplateServiceImpl implements RoomTemplateService {
 
 	@Override
 	public Result<Void> createTemplate(RoomTemplate roomTemplate) {
+		// 判断当前请求用户是否登录
+		Result<User> loginResult = userClient.isLogin();
+		if (!loginResult.isSuccess()) {
+			return ResultFactory.createFailedResult(loginResult.getMessage());
+		}
+		// 获取用户对象
+		User sessionUser = loginResult.getData();
 		// 填补其它字段
-		roomTemplate.setMasterId(StpUtil.getLoginIdAsLong());
+		roomTemplate.setMasterId(sessionUser.getId());
 		roomTemplate.setUserIdList(new ArrayList<>());
 		// 把自己加入到拥有者列表
-		roomTemplate.getUserIdList().add(StpUtil.getLoginIdAsLong());
+		roomTemplate.getUserIdList().add(sessionUser.getId());
 		roomTemplateDAO.add(roomTemplate);
 		return ResultFactory.createVoidSuccessResult("创建房间模板成功！");
 	}
 
 	@Override
 	public Result<Void> deleteTemplate(String id) {
+		// 判断当前请求用户是否登录
+		Result<User> loginResult = userClient.isLogin();
+		if (!loginResult.isSuccess()) {
+			return ResultFactory.createFailedResult(loginResult.getMessage());
+		}
 		// 获取房间模板
 		RoomTemplate getTemplate = roomTemplateDAO.getById(id);
 		if (getTemplate == null) {
 			return ResultFactory.createFailedResult("该房间模板不存在！");
 		}
 		// 检查当前用户是否是房间模板的创建者
-		if (getTemplate.getMasterId() != StpUtil.getLoginIdAsLong()) {
+		if (getTemplate.getMasterId() != loginResult.getData().getId()) {
 			return ResultFactory.createFailedResult("不是该模板的创建者，不能删除该房间模板！");
 		}
 		// 执行删除
@@ -118,26 +129,18 @@ public class RoomTemplateServiceImpl implements RoomTemplateService {
 	}
 
 	@Override
-	public Result<Void> addUserToTemplate(String templateId, long userId) {
+	public Result<Void> removeLoginUserFromTemplate(String templateId) {
 		// 获取房间模板
 		RoomTemplate getTemplate = roomTemplateDAO.getById(templateId);
 		if (getTemplate == null) {
 			return ResultFactory.createFailedResult("该房间模板不存在！");
 		}
-		// 添加用户
-		roomTemplateDAO.addUserToTemplate(templateId, userId);
-		return ResultFactory.createVoidSuccessResult("添加用户至模板完成！");
-	}
-
-	@Override
-	public Result<Void> removeUserFromTemplate(String templateId, long userId) {
-		// 获取房间模板
-		RoomTemplate getTemplate = roomTemplateDAO.getById(templateId);
-		if (getTemplate == null) {
-			return ResultFactory.createFailedResult("该房间模板不存在！");
+		// 从登录session中获取用户信息
+		Result<User> userResult = userClient.isLogin();
+		if (!userResult.isSuccess()) {
+			return ResultFactory.createFailedResult("用户未登录！");
 		}
-		// 移除用户
-		roomTemplateDAO.removeUserFromTemplate(templateId, userId);
+		roomTemplateDAO.removeUserFromTemplate(templateId, userResult.getData().getId());
 		return ResultFactory.createVoidSuccessResult("从模板移除用户完成！");
 	}
 
