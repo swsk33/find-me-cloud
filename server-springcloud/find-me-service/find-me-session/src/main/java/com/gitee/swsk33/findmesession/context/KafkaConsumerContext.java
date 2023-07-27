@@ -66,7 +66,7 @@ public class KafkaConsumerContext {
 				consumer.close();
 				// 关闭定时任务
 				scheduleMap.remove(userId).cancel(true);
-				log.info("已移除用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
+				log.info("已移除用于向用户(id={})拉取并推送消息的消费者！", userId);
 				return;
 			}
 			try {
@@ -83,13 +83,13 @@ public class KafkaConsumerContext {
 					session.getBasicRemote().sendText(JacksonMapper.getMapper().writeValueAsString(data));
 				}
 			} catch (Exception e) {
-				log.error("Kafka消费者(用户id：" + userId + ")拉取消息或者序列化时发生错误！");
+				log.error("Kafka消费者(用户id：{})拉取消息或者序列化时发生错误！", userId);
 				e.printStackTrace();
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
 		// 存入任务以便于后续管理
 		scheduleMap.put(userId, future);
-		log.info("已创建用于向用户(id=" + userId + ")拉取并推送消息的消费者！");
+		log.info("已创建用于向用户(id={})拉取并推送消息的消费者！", userId);
 	}
 
 	/**

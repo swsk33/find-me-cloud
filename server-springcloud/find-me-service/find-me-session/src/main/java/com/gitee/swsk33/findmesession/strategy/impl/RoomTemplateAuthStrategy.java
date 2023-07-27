@@ -25,7 +25,7 @@ public class RoomTemplateAuthStrategy implements RealTimeMessageStrategy {
 		Result<Void> result = roomTemplateService.authAndJoinThroughTemplate(roomId, userId, session);
 		// 认证失败则发送消息并断开连接
 		if (!result.isSuccess()) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, result.getMessage()));
+			session.getBasicRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, result.getMessage()));
 			session.close();
 		}
 	}

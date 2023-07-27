@@ -59,7 +59,7 @@ public class RoomSessionAPI {
 		ScheduledFuture<?> future = notLoginSessionExecutor.schedule(() -> {
 			try {
 				if (!session.isOpen()) {
-					log.warn("用户id：" + userId + "的会话已被关闭！退出定时任务！");
+					log.warn("用户id：{}的会话已被关闭！退出定时任务！", userId);
 					// 从列表中移除自己
 					notLoginSessions.remove(userId);
 					return;
@@ -68,7 +68,7 @@ public class RoomSessionAPI {
 				session.close();
 				// 从列表中移除自己
 				notLoginSessions.remove(userId);
-				log.warn("用户id：" + userId + "的会话过期！");
+				log.warn("用户id：{}的会话过期！", userId);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -116,7 +116,7 @@ public class RoomSessionAPI {
 		// 反序列化
 		Message<?> messageObject = JacksonMapper.getMapper().readValue(message, Message.class);
 		// 拦截未认证会话的非认证消息
-		if (notLoginSessions.containsKey(userId) && messageObject.getType() != MessageType.AUTH) {
+		if (notLoginSessions.containsKey(userId) && messageObject.getType() != MessageType.AUTH && messageObject.getType() != MessageType.TEMPLATE_AUTH) {
 			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, "未认证！"));
 			return;
 		}

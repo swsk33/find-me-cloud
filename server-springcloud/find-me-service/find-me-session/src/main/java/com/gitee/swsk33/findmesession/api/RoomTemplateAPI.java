@@ -32,14 +32,9 @@ public class RoomTemplateAPI {
 		return roomTemplateService.deleteTemplate(id);
 	}
 
-	@DeleteMapping("/remove-current-user/{templateId}")
-	public Result<Void> removeUserFromTemplate(@PathVariable String templateId) {
-		return roomTemplateService.removeLoginUserFromTemplate(templateId);
-	}
-
-	@GetMapping("/get-by-user/{userId}")
-	public Result<List<RoomTemplate>> getByUser(@PathVariable long userId) {
-		return roomTemplateService.getTemplateByUser(userId);
+	@GetMapping("/get-by-login-user")
+	public Result<List<RoomTemplate>> getByUser() {
+		return roomTemplateService.getTemplateByLoginUser();
 	}
 
 }

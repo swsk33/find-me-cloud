@@ -54,7 +54,12 @@ public class RoomTemplateShareServiceImpl implements RoomTemplateShareService {
 			return ResultFactory.createFailedResult("该分享对应的房间模板不存在！");
 		}
 		// 将用户加入模板的拥有者列表
-		roomTemplateDAO.addUserToTemplate(getTemplate.getId(), userResult.getData().getId());
+		long userId = userResult.getData().getId();
+		// 如果用户已存在于模板拥有者列表中，则直接返回
+		if (getTemplate.getUserIdList().contains(userId)) {
+			return ResultFactory.createFailedResult("用户已添加当前模板！");
+		}
+		roomTemplateDAO.addUserToTemplate(getTemplate.getId(), userId);
 		return ResultFactory.createVoidSuccessResult("添加房间模板成功！");
 	}
 

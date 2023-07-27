@@ -27,13 +27,14 @@ public class RoomAuthMessageStrategy implements RealTimeMessageStrategy {
 		// 首先进行认证
 		Result<Void> authResult = roomService.auth(roomId, password, userId);
 		if (!authResult.isSuccess()) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, authResult.getMessage()));
+			session.getBasicRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, authResult.getMessage()));
 			session.close();
+			return;
 		}
 		// 认证成功后就加入房间
 		Result<Void> addRoomResult = roomService.userJoinRoom(roomId, userId, session);
 		if (!addRoomResult.isSuccess()) {
-			session.getAsyncRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, addRoomResult.getMessage()));
+			session.getBasicRemote().sendObject(MessageFactory.createMessage(MessageType.AUTH_FAILED, addRoomResult.getMessage()));
 			session.close();
 		}
 	}

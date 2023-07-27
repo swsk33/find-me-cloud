@@ -33,8 +33,9 @@ public class RoomTemplateDAOImpl implements RoomTemplateDAO {
 
 	@Override
 	public void delete(String id) {
-		Criteria criteria = Criteria.where("id").is(id);
-		mongoTemplate.remove(criteria);
+		RoomTemplate template = new RoomTemplate();
+		template.setId(id);
+		mongoTemplate.remove(template);
 	}
 
 	@Override

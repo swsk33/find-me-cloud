@@ -67,7 +67,7 @@ io:
           email: "你的邮箱"
           password: "你的邮箱密码（或者是授权码）"
           code-storage: "redis"
-          site-name: "Find-Me"
+          site-name: "FindMe"
 
 # Sa-Token配置
 sa-token:

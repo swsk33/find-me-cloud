@@ -73,12 +73,16 @@ public class RoomTemplateServiceImpl implements RoomTemplateService {
 			return ResultFactory.createFailedResult("该房间模板不存在！");
 		}
 		// 检查当前用户是否是房间模板的创建者
-		if (getTemplate.getMasterId() != loginResult.getData().getId()) {
-			return ResultFactory.createFailedResult("不是该模板的创建者，不能删除该房间模板！");
+		User currentLoginUser = loginResult.getData();
+		// 如果不是，则仅仅是模板拥有者，从模板拥有者列表中移除
+		if (getTemplate.getMasterId() != currentLoginUser.getId()) {
+			roomTemplateDAO.removeUserFromTemplate(id, currentLoginUser.getId());
+			return ResultFactory.createVoidSuccessResult("从模板移除用户完成！");
+		} else {
+			// 否则，删除整个模板，其他拥有该模板的用户也会丢失该模板
+			roomTemplateDAO.delete(id);
 		}
-		// 执行删除
-		roomTemplateDAO.delete(id);
-		return ResultFactory.createVoidSuccessResult("删除完成！");
+		return ResultFactory.createVoidSuccessResult("删除模板完成！");
 	}
 
 	@Override
@@ -129,24 +133,13 @@ public class RoomTemplateServiceImpl implements RoomTemplateService {
 	}
 
 	@Override
-	public Result<Void> removeLoginUserFromTemplate(String templateId) {
-		// 获取房间模板
-		RoomTemplate getTemplate = roomTemplateDAO.getById(templateId);
-		if (getTemplate == null) {
-			return ResultFactory.createFailedResult("该房间模板不存在！");
+	public Result<List<RoomTemplate>> getTemplateByLoginUser() {
+		// 判断当前请求用户是否登录
+		Result<User> loginResult = userClient.isLogin();
+		if (!loginResult.isSuccess()) {
+			return ResultFactory.createFailedResult(loginResult.getMessage());
 		}
-		// 从登录session中获取用户信息
-		Result<User> userResult = userClient.isLogin();
-		if (!userResult.isSuccess()) {
-			return ResultFactory.createFailedResult("用户未登录！");
-		}
-		roomTemplateDAO.removeUserFromTemplate(templateId, userResult.getData().getId());
-		return ResultFactory.createVoidSuccessResult("从模板移除用户完成！");
-	}
-
-	@Override
-	public Result<List<RoomTemplate>> getTemplateByUser(long userId) {
-		return ResultFactory.createSuccessResult("查询完成！", roomTemplateDAO.getByUser(userId));
+		return ResultFactory.createSuccessResult("查询完成！", roomTemplateDAO.getByUser(loginResult.getData().getId()));
 	}
 
 }

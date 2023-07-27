@@ -39,7 +39,7 @@ public class KafkaTopicCleaner {
 	/**
 	 * 定期清理不存在的房间的Kafka Topic
 	 */
-	@Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
+	@Scheduled(fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
 	private void cleanKafkaTopic() {
 		// 分布式锁加锁
 		RLock lock = redissonClient.getLock(KAFKA_TOPIC_CLEAN);

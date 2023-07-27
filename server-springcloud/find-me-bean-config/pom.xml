@@ -24,6 +24,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- OpenFeign远程调用 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Redis支持 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

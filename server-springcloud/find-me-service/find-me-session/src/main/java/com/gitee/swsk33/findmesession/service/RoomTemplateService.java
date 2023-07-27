@@ -22,7 +22,13 @@ public interface RoomTemplateService {
 	Result<Void> createTemplate(RoomTemplate roomTemplate);
 
 	/**
-	 * 删除一个房间模板
+	 * 删除一个房间模板<br>
+	 * 分为两种情况：<br>
+	 * <ul>
+	 *     <li>如果是模板创建者调用该接口，则直接从数据库删除该模板</li>
+	 *     <li>如果是拥有该模板但是不是创建者的人调用该接口，则只是把这个用户从这个模板的拥有者列表中移除</li>
+	 * </ul>
+	 * 用户数据从登录session中获取
 	 *
 	 * @param id 模板id
 	 * @return 结果
@@ -40,19 +46,10 @@ public interface RoomTemplateService {
 	Result<Void> authAndJoinThroughTemplate(String templateId, long userId, Session session);
 
 	/**
-	 * 把当前登录的用户从指定的模板的拥有者列表中移除（如果当前登录的用户存在于指定模板的拥有者列表的话）
+	 * 获取当前登录的用户所拥有的模板
 	 *
-	 * @param templateId 模板id
 	 * @return 结果
 	 */
-	Result<Void> removeLoginUserFromTemplate(String templateId);
-
-	/**
-	 * 获取一个用户所拥有的模板
-	 *
-	 * @param userId 用户id
-	 * @return 结果
-	 */
-	Result<List<RoomTemplate>> getTemplateByUser(long userId);
+	Result<List<RoomTemplate>> getTemplateByLoginUser();
 
 }

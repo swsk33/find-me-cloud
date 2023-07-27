@@ -21,11 +21,6 @@ public class AvatarAPI {
 		return avatarService.upload(file);
 	}
 
-	@DeleteMapping("/delete/{id}")
-	public Result<Void> delete(@PathVariable String id) {
-		return avatarService.delete(id);
-	}
-
 	@GetMapping("/get/{id}")
 	public ResponseEntity<byte[]> getAvatar(@PathVariable String id) {
 		Result<BinaryContent> result = avatarService.get(id);
