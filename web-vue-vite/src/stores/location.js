@@ -3,10 +3,19 @@ import { defineStore } from 'pinia';
 import gcoord from 'gcoord';
 import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
 
+/**
+ * @typedef Position 位置
+ * @property {Number} longitude 经度
+ * @property {Number} latitude 纬度
+ * @property {Number} elevation 海拔
+ * @property {Number} orientation 方向
+ */
+
 export const useLocationStore = defineStore('locationStore', {
 	state() {
 		return {
 			/**
+			 * @type {Position}
 			 * 用户自身的位置信息，包含经纬度、海拔、朝向
 			 */
 			position: {

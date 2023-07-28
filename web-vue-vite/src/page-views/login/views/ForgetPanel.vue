@@ -22,6 +22,7 @@ import { Message, Grid, Lock } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 
@@ -49,7 +50,7 @@ const sendCode = async () => {
 		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await sendRequest('/api/user/email/password-reset-code/' + userData.email, REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.USER_EMAIL + 'password-reset-code/' + userData.email, REQUEST_METHOD.GET);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
@@ -80,7 +81,7 @@ const doReset = async () => {
 		showNotification('错误', '验证码不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await sendRequest('/api/user/common/reset-password/' + code.value, REQUEST_METHOD.PUT, userData);
+	const response = await sendRequest(REQUEST_PREFIX.USER_COMMON + 'reset-password/' + code.value, REQUEST_METHOD.PUT, userData);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;

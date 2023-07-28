@@ -39,7 +39,7 @@
 				<ul class="info">
 					<li>经度：{{ pointerData.position.longitude }}</li>
 					<li>纬度：{{ pointerData.position.latitude }}</li>
-					<li>高程：{{ pointerData.position.elevation == null ? '该用户高程信息不可用' : pointerData.position.elevation }}</li>
+					<li>海拔：{{ pointerData.position.elevation == null ? '该用户海拔信息不可用' : pointerData.position.elevation }}</li>
 					<li>方向：{{ getHeading }}</li>
 					<li v-if="props.userId !== 0">距离我：{{ mapStore.mapLoader.GeometryUtil.distance([locationStore.position.longitude, locationStore.position.latitude], [pointerData.position.longitude, pointerData.position.latitude]) }}米</li>
 				</ul>
@@ -57,7 +57,7 @@
 import { usePointerStore } from '../../../stores/pointer';
 import { useUserStore } from '../../../stores/user';
 import { useMapStore } from '../../../stores/map';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useLocationStore } from '../../../stores/location';
 import { Top, Bottom, Back, Right, TopRight, TopLeft, BottomRight, BottomLeft, CaretTop, CaretBottom } from '@element-plus/icons-vue';
 import { useRoomStore } from '../../../stores/room';
@@ -199,7 +199,12 @@ onMounted(() => {
 			// 刷新指针位置
 			refreshPointerPosition();
 		});
-		userData.value = userStore.userData;
+		// 监听用户信息变化
+		watch(() => userStore.userData, () => {
+			userData.value = userStore.userData;
+		}, {
+			immediate: true
+		});
 	} else {
 		// 订阅指针store获取对应的其他用户的信息，位置变化及时刷新指针坐标和高程信息
 		pointerStore.$subscribe((mutation, state) => {
@@ -211,7 +216,7 @@ onMounted(() => {
 			// 改变指针坐标
 			refreshPointerPosition();
 			refreshPointerHeight();
-			// 获取对应的房间的用户
+			// 获取对应的房间的用户信息
 			userData.value = roomStore.roomInfo.users[props.userId];
 		});
 	}
@@ -237,7 +242,6 @@ onMounted(() => {
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			transition: transform 0.1s ease-out;
 
 			.circle {
 				position: absolute;

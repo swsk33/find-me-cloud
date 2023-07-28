@@ -2,6 +2,12 @@
 import { defineStore } from 'pinia';
 import { useMapStore } from './map';
 
+/**
+ * @typedef Pointer 指针对象
+ * @property {Position} position 位置
+ * @property {String} color 指针颜色
+ */
+
 export const usePointerStore = defineStore('userPointerStore', {
 	state() {
 		return {

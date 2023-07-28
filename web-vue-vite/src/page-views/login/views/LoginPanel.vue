@@ -21,6 +21,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../../../stores/user';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -35,7 +36,7 @@ const userData = reactive({
  * 用户登录
  */
 const login = async () => {
-	const response = await sendRequest('/api/user/common/login', REQUEST_METHOD.POST, userData);
+	const response = await sendRequest(REQUEST_PREFIX.USER_COMMON + 'login', REQUEST_METHOD.POST, userData);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;

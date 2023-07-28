@@ -86,8 +86,6 @@ const sendMessage = () => {
 	chatMessage.data = '';
 };
 
-// 计算属性
-
 /**
  * 获取消息对应用户头像
  * @param id 消息的发送者id，0表示自己

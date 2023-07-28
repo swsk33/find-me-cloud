@@ -1,13 +1,25 @@
 // 用户状态
 import { defineStore } from 'pinia';
 import { REQUEST_METHOD, sendRequest } from '../utils/request';
+import { REQUEST_PREFIX } from '../param/request-prefix';
 import defaultAvatar from '../assets/avatar/default-avatar.jpg';
+
+/**
+ * @typedef User 用户信息
+ * @property {String} id 主键id
+ * @property {String} username 用户名
+ * @property {String} password 密码
+ * @property {String} nickname 昵称
+ * @property {String} avatarId 头像id
+ * @property {String} email 邮箱
+ */
 
 export const useUserStore = defineStore('userStore', {
 	state() {
 		return {
 			/**
 			 * 用户数据
+			 * @type {User}
 			 */
 			userData: undefined,
 			/**
@@ -21,7 +33,7 @@ export const useUserStore = defineStore('userStore', {
 		 * 判断是否登录
 		 */
 		async checkLogin() {
-			const response = await sendRequest('/api/user/common/is-login', REQUEST_METHOD.GET);
+			const response = await sendRequest(REQUEST_PREFIX.USER_COMMON + 'is-login', REQUEST_METHOD.GET);
 			if (response.success) {
 				this.userData = response.data;
 			}
@@ -29,14 +41,14 @@ export const useUserStore = defineStore('userStore', {
 		},
 		/**
 		 * 根据用户头像id获取对应头像URL
-		 * @param user 用户对象
+		 * @param {User} user 用户对象
 		 * @returns {string} 头像URL
 		 */
 		getUserAvatarURL(user = this.userData) {
 			if (user == null || user.avatarId == null) {
 				return defaultAvatar;
 			}
-			return '/api/image/avatar/get/' + user.avatarId;
+			return REQUEST_PREFIX.USER_AVATAR + 'get/' + user.avatarId;
 		}
 	}
 });

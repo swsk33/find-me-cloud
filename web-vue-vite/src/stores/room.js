@@ -8,6 +8,20 @@ import { useLocationStore } from './location';
 import { usePointerStore } from './pointer';
 import { ElMessageBox } from 'element-plus';
 import { useChatStore } from './chat';
+import { REQUEST_PREFIX } from '../param/request-prefix';
+
+/**
+ * @typedef RallyPoint 集结点
+ * @property {Number} longitude 集结点经度
+ * @property {Number} latitude 集结点纬度
+ *
+ * @typedef Room 房间对象
+ * @property {String} id 主键id
+ * @property {String} name 房间名
+ * @property {String} password 房间密码
+ * @property {RallyPoint} rally 集结点
+ * @property {Object} users 用户列表
+ */
 
 export const useRoomStore = defineStore('roomStore', {
 	state() {
@@ -21,7 +35,8 @@ export const useRoomStore = defineStore('roomStore', {
 			 */
 			authed: false,
 			/**
-			 * 当前房间信息
+			 * 当前房间对象信息
+			 * @type {Room}
 			 */
 			roomInfo: undefined,
 			/**
@@ -56,8 +71,7 @@ export const useRoomStore = defineStore('roomStore', {
 			const userStore = useUserStore();
 			const messageStore = useMessageStore();
 			const chatStore = useChatStore();
-			// 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
-			this.session = new WebSocket('wss://' + location.host + '/ws/session/room/' + id + '/' + userStore.userData.id);
+			this.session = new WebSocket(REQUEST_PREFIX.SESSION_ROOM_WS + id + '/' + userStore.userData.id);
 			// 连接建立事件
 			this.session.addEventListener('open', (e) => {
 				// 设定在房间内
@@ -128,7 +142,7 @@ export const useRoomStore = defineStore('roomStore', {
 		 * @param id 房间id
 		 */
 		async getRoomInfo(id) {
-			const response = await sendRequest('/api/session/room/get/' + id, REQUEST_METHOD.GET);
+			const response = await sendRequest(REQUEST_PREFIX.SESSION_ROOM + 'get/' + id, REQUEST_METHOD.GET);
 			if (!response.success) {
 				showMessage(response.message, MESSAGE_TYPE.error);
 				return;
