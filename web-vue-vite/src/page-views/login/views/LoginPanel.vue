@@ -22,9 +22,11 @@ import { useUserStore } from '../../../stores/user';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { usePathStore } from '../../../stores/path';
 
 const router = useRouter();
 const userStore = useUserStore();
+const pathStore = usePathStore();
 
 // 用户登录数据
 const userData = reactive({
@@ -44,7 +46,12 @@ const login = async () => {
 	showNotification('成功', '登录成功！');
 	// 拉取用户信息
 	await userStore.checkLogin();
-	await router.push('/');
+	// 重定向至用户进入时的页面，排除/login
+	if (pathStore.path.startsWith('/login')) {
+		await router.push('/');
+		return;
+	}
+	await router.push(pathStore.path);
 };
 </script>
 

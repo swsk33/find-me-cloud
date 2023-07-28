@@ -8,12 +8,16 @@ import { useRouter } from 'vue-router';
 import { onBeforeMount } from 'vue';
 import { useUserStore } from './stores/user';
 import { MESSAGE_TYPE, showNotification } from './utils/element-message';
+import { usePathStore } from './stores/path';
 
 const router = useRouter();
 const userStore = useUserStore();
+const pathStore = usePathStore();
 
 // 检测用户是否登录
 onBeforeMount(async () => {
+	// 获取用户进入页面时的路径
+	pathStore.path = location.pathname;
 	await userStore.checkLogin();
 	if (!userStore.isLogin) {
 		// 未登录跳转到登录页

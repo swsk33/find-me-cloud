@@ -50,6 +50,11 @@ import CreateRoom from './components/dialog/CreateRoom.vue';
 import JoinRoom from './components/dialog/JoinRoom.vue';
 import RoomLookup from './components/dialog/RoomLookup.vue';
 import EditUser from './components/dialog/EditUser.vue';
+import { useRoute } from 'vue-router';
+import { usePathStore } from '../../stores/path';
+import router from '../../router';
+
+const route = useRoute();
 
 // pinia
 const mapStore = useMapStore();
@@ -58,6 +63,7 @@ const userStore = useUserStore();
 const pointerStore = usePointerStore();
 const roomStore = useRoomStore();
 const messageStore = useMessageStore();
+const pathStore = usePathStore();
 
 // 组件或者DOM引用
 const createRoomDialogRef = ref(null);
@@ -89,12 +95,11 @@ const setRally = () => {
 	showMessage('点击地图上的某处以设定集结点...', MESSAGE_TYPE.success);
 };
 
-onMounted(async () => {
-	// 初始化地图
-	await mapStore.initMap('map-container');
-	// 添加陀螺仪朝向信息（响应式）
-	locationStore.position.orientation = useDeviceOrientation().alpha;
-	// 给地图注册事件：当地图被移动、缩放时，刷新地图上所有指针位置
+/**
+ * 给地图注册事件
+ */
+const registerMapEvents = () => {
+	// 当地图被移动、缩放时，刷新地图上所有指针位置
 	mapStore.map.on('mapmove', () => {
 		// 刷新用户标志
 		selfMarker.value.refreshPointerPosition();
@@ -123,14 +128,48 @@ onMounted(async () => {
 		roomStore.settingRally = false;
 		showMessage('放置完成！', MESSAGE_TYPE.success);
 	});
+};
+
+/**
+ * 解析一键加入房间链接
+ * @return {Boolean} 如果成功解析链接并加入了房间，返回true，否则返回false
+ */
+const parseJoinRoomLink = () => {
+	// 如果记录的用户路径以'/join-room'开头，则进行解析
+	if (!pathStore.path.startsWith('/join-room')) {
+		return false;
+	}
+	// 如果参数有一个为空，则不进行加入房间操作
+	if (route.params.roomId == null || route.params.roomPassword == null) {
+		return false;
+	}
+	// 执行加入房间操作
+	showMessage('解析一键加入链接完成！', MESSAGE_TYPE.success);
+	roomStore.connectToRoom(route.params.roomId, route.params.roomPassword);
+	// 清空路径
+	router.push('/');
+	return true;
+};
+
+onMounted(async () => {
+	// 初始化地图
+	await mapStore.initMap('map-container');
+	// 添加陀螺仪朝向信息（响应式）
+	locationStore.position.orientation = useDeviceOrientation().alpha;
+	// 给地图注册事件
+	registerMapEvents();
 	// 等待3秒后缩放至用户
 	setTimeout(() => {
 		mapStore.zoomToUser();
 	}, 3000);
-	// 检查缓存，如果缓存房间信息不为空说明上次未正常退出
-	const roomCache = JSON.parse(localStorage.getItem('room'));
-	if (roomCache != null) {
-		roomStore.showSessionRestoreDialog();
+	// 解析是否是通过一键加入房间的链接加入的
+	const isJoinByLink = parseJoinRoomLink();
+	// 如果没有通过一键加入链接加入房间，则检查缓存，如果缓存房间信息不为空说明上次未正常退出
+	if (!isJoinByLink) {
+		const roomCache = JSON.parse(localStorage.getItem('room'));
+		if (roomCache != null) {
+			roomStore.showSessionRestoreDialog();
+		}
 	}
 });
 </script>

@@ -1,7 +1,7 @@
 <!-- 查看房间详情弹窗 -->
 <template>
 	<div class="room-lookup-dialog">
-		<el-dialog class="dialog" v-model="showDialog" width="85vw" top="26vh" :show-close="false" :center="true" destroy-on-close>
+		<el-dialog class="dialog" v-model="showDialog" width="85vw" top="24vh" :show-close="false" :center="true" destroy-on-close>
 			<template #header>
 				<div class="title">{{ roomStore.roomInfo.name }}</div>
 			</template>
@@ -30,9 +30,10 @@
 			</div>
 			<template #footer>
 				<div class="button-box">
-					<el-button class="button copy-id" type="success" @click="copyRoomInfo" size="small" plain>复制房间信息</el-button>
+					<el-button class="button copy-all" type="success" @click="copyRoomInfo" size="small" plain>复制房间全部信息</el-button>
+					<el-button class="button copy-link" type="primary" size="small" @click="copyJoinLink" plain>复制一键加入链接</el-button>
 					<el-button class="button cancel" type="warning" plain size="small" @click="roomStore.getRoomInfo(roomStore.roomInfo.id)">刷新房间</el-button>
-					<el-button class="button cancel" type="danger" plain size="small" @click="showDialog = false">知道了</el-button>
+					<el-button class="button cancel" type="danger" plain size="small" @click="showDialog = false">关闭页面</el-button>
 				</div>
 			</template>
 		</el-dialog>
@@ -70,11 +71,19 @@ const copyRoomPassword = () => {
 };
 
 /**
+ * 复制一键加入房间链接
+ */
+const copyJoinLink = () => {
+	ClipboardJS.copy('复制下列链接粘贴到浏览器以一键加入房间：\n\n' + location.origin + '/join-room/room-id/' + roomStore.roomInfo.id + '/room-password/' + roomStore.roomPassword);
+	showMessage('复制一键加入链接完成！', MESSAGE_TYPE.success);
+};
+
+/**
  * 复制房间全部信息方法
  */
 const copyRoomInfo = () => {
 	ClipboardJS.copy('房间id：' + roomStore.roomInfo.id + '\n房间名：' + roomStore.roomInfo.name + '\n房间密码：' + roomStore.roomPassword + '\n\n' + location.href);
-	showMessage('复制完成！', MESSAGE_TYPE.success);
+	showMessage('复制房间全部信息完成！', MESSAGE_TYPE.success);
 };
 
 defineExpose({ showDialog });
@@ -156,7 +165,13 @@ defineExpose({ showDialog });
 
 		.button-box {
 			position: relative;
-			margin-top: 17%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-wrap: wrap;
+			width: 100%;
+			height: 9vh;
+			margin-top: 18%;
 		}
 	}
 }
