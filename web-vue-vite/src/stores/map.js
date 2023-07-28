@@ -3,6 +3,14 @@ import { defineStore } from 'pinia';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { useLocationStore } from './location';
 
+/**
+ * @typedef Position 位置
+ * @property {Number} longitude 经度
+ * @property {Number} latitude 纬度
+ * @property {Number} elevation 海拔
+ * @property {Number} orientation 方向
+ */
+
 export const useMapStore = defineStore('mapStore', {
 	state() {
 		return {
@@ -59,6 +67,15 @@ export const useMapStore = defineStore('mapStore', {
 				return;
 			}
 			this.map.setZoomAndCenter(17, [longitude, latitude]);
+		},
+		/**
+		 * 计算起点和终点两点距离
+		 * @param {Position} start 起点
+		 * @param {Position} end 终点
+		 * @return {Number} 距离（单位：米）
+		 */
+		getDistance(start, end) {
+			return this.mapLoader.GeometryUtil.distance([start.longitude, start.latitude], [end.longitude, end.latitude]);
 		}
 	},
 	getters: {

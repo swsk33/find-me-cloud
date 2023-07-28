@@ -74,7 +74,7 @@ const copyRoomPassword = () => {
  * 复制一键加入房间链接
  */
 const copyJoinLink = () => {
-	ClipboardJS.copy('复制下列链接粘贴到浏览器以一键加入房间：\n\n' + location.origin + '/join-room/room-id/' + roomStore.roomInfo.id + '/room-password/' + roomStore.roomPassword);
+	ClipboardJS.copy('FindMe-复制下列链接粘贴到浏览器以一键加入房间进行位置共享：\n\n' + location.origin + '/join-room/room-id/' + roomStore.roomInfo.id + '/room-password/' + roomStore.roomPassword);
 	showMessage('复制一键加入链接完成！', MESSAGE_TYPE.success);
 };
 

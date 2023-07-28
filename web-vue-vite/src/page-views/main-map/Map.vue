@@ -76,8 +76,9 @@ const rallyMarker = ref(null);
 // 其他用户指针
 const othersMarker = ref([]);
 
-// 响应式位置信息
+// 响应式位置和旋转角信息
 const WGS84Coordinates = useGeolocation().coords;
+const deviceOrientation = useDeviceOrientation().alpha;
 
 // 监听位置信息
 watch(WGS84Coordinates, () => {
@@ -85,6 +86,12 @@ watch(WGS84Coordinates, () => {
 	locationStore.convertToGCJ02(WGS84Coordinates.value.longitude, WGS84Coordinates.value.latitude);
 	// 实时赋值高度变化
 	locationStore.position.elevation = WGS84Coordinates.value.altitude;
+});
+
+// 监听陀螺仪朝向信息
+watch(deviceOrientation, () => {
+	locationStore.originDeviceOrientation = deviceOrientation.value;
+	locationStore.setDeviceOrientation();
 });
 
 /**
@@ -154,8 +161,6 @@ const parseJoinRoomLink = () => {
 onMounted(async () => {
 	// 初始化地图
 	await mapStore.initMap('map-container');
-	// 添加陀螺仪朝向信息（响应式）
-	locationStore.position.orientation = useDeviceOrientation().alpha;
 	// 给地图注册事件
 	registerMapEvents();
 	// 等待3秒后缩放至用户
@@ -171,6 +176,9 @@ onMounted(async () => {
 			roomStore.showSessionRestoreDialog();
 		}
 	}
+	// 完成一些初始化工作
+	// 开启方向自动校正
+	locationStore.enableOrientationAutoFix();
 });
 </script>
 

@@ -4,7 +4,7 @@
 	<div class="user-pointer" :style="{left: x + 'px', top: y + 'px'}" v-if="pointerData.position != null && pointerData.position.longitude != null && pointerData.position.latitude != null">
 		<!-- 形态1：在屏幕范围内时，显示指针本身 -->
 		<div class="user-marker" @click="dialogShow = true" v-if="status === pointerStore.POINTER_STATUS.IN_SCREEN">
-			<div class="marker-base" :style="{transform: 'rotate(' + (360 - pointerData.position.orientation) + 'deg)'}">
+			<div class="marker-base" :style="{transform: 'rotate(' + locationStore.orientationToCSSRotate(pointerData.position.orientation) + 'deg)'}">
 				<div class="circle" :style="{backgroundColor: pointerData.color, boxShadow: pointerData.color + ' 0 0 6px'}">
 				</div>
 				<div class="heading" :style="{borderBottomColor: pointerData.color}" v-if="pointerData.position.orientation != null"></div>
@@ -41,7 +41,7 @@
 					<li>纬度：{{ pointerData.position.latitude }}</li>
 					<li>海拔：{{ pointerData.position.elevation == null ? '该用户海拔信息不可用' : pointerData.position.elevation }}</li>
 					<li>方向：{{ getHeading }}</li>
-					<li v-if="props.userId !== 0">距离我：{{ mapStore.mapLoader.GeometryUtil.distance([locationStore.position.longitude, locationStore.position.latitude], [pointerData.position.longitude, pointerData.position.latitude]) }}米</li>
+					<li v-if="props.userId !== 0">距离我：{{ mapStore.getDistance(locationStore.position, pointerData.position) }}米</li>
 				</ul>
 			</div>
 			<template #footer>

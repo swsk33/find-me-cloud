@@ -1,7 +1,7 @@
 <!-- 修改用户信息弹窗 -->
 <template>
 	<div class="edit-user-dialog">
-		<el-dialog class="dialog" v-model="showDialog" width="75vw" top="22vh" :show-close="false" :center="true" title="个人中心">
+		<el-dialog class="dialog" v-model="showDialog" width="85vw" top="22vh" :show-close="false" :center="true" title="个人中心">
 			<div class="content">
 				<div class="avatar-box">
 					<img :src="previewImage" alt="无法显示"/>
@@ -146,7 +146,7 @@ onMounted(() => {
 .edit-user-dialog {
 	.dialog {
 		.content {
-			height: 32vh;
+			height: 34vh;
 			overflow: scroll;
 
 			.avatar-box {
@@ -154,7 +154,7 @@ onMounted(() => {
 				height: 20%;
 				display: flex;
 				align-items: center;
-				margin-bottom: 16px;
+				margin-bottom: 24px;
 
 				img {
 					position: relative;
@@ -197,7 +197,6 @@ onMounted(() => {
 			position: relative;
 			display: flex;
 			justify-content: space-around;
-			bottom: 3vh;
 		}
 	}
 }
