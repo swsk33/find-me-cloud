@@ -45,6 +45,10 @@ export const useMessageStore = defineStore('messageStore', {
 				 */
 				auth: 'AUTH',
 				/**
+				 * 模板房间认证
+				 */
+				templateAuth: 'TEMPLATE_AUTH',
+				/**
 				 * 认证成功
 				 */
 				authSuccess: 'AUTH_SUCCESS',

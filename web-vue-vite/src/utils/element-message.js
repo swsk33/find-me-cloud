@@ -1,4 +1,4 @@
-import { ElMessage, ElNotification } from 'element-plus';
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus';
 
 /**
  * 消息类型
@@ -52,4 +52,24 @@ function showNotification(title, message, type = MESSAGE_TYPE.success, duration 
 	});
 }
 
-export { MESSAGE_TYPE, showMessage, showNotification };
+/**
+ * 显示交互式对话框
+ * @param {String} title 对话框标题
+ * @param {String} message 对话框内容
+ * @param {String} okText 确认按钮文字
+ * @param {String} cancelText 取消按钮文字
+ * @param {Function} ok 点击确认按钮后执行的回调函数
+ * @param {Function} cancel 点击取消按钮后执行的回调函数
+ */
+function showInteractiveDialog(title, message, okText, cancelText, ok, cancel) {
+	ElMessageBox.confirm(message, title, {
+		confirmButtonText: okText,
+		cancelButtonText: cancelText,
+		type: 'warning',
+		center: true,
+		showClose: false,
+		closeOnClickModal: false
+	}).then(ok).catch(cancel);
+}
+
+export { MESSAGE_TYPE, showMessage, showNotification, showInteractiveDialog };

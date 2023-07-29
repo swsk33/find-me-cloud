@@ -39,3 +39,8 @@ const joinRoom = async () => {
 
 defineExpose({ showDialog });
 </script>
+
+<style lang="scss">
+// 导入对话框共用样式
+@import "../../../../assets/scss/dialog.scss";
+</style>

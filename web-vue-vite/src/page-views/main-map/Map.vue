@@ -7,6 +7,7 @@
 		<div class="room-button-box">
 			<el-button class="button create-room" type="success" v-if="!roomStore.inTheRoom" @click="createRoomDialogRef.showDialog = true" size="small">创建房间</el-button>
 			<el-button class="button join-room" type="primary" v-if="!roomStore.inTheRoom" @click="joinRoomDialogRef.showDialog = true" size="small">加入房间</el-button>
+			<el-button class="button room-template" type="warning" v-if="!roomStore.inTheRoom" @click="roomTemplateDialogRef.showDialog = true" size="small">房间模板</el-button>
 			<el-button class="button lookup-room" type="success" v-if="roomStore.inTheRoom" size="small" @click="roomLookupDialogRef.showDialog = true" plain>查看房间</el-button>
 			<el-button class="button lookup-room" type="primary" v-if="roomStore.inTheRoom" size="small" @click="setRally" plain>放集结点</el-button>
 			<el-button class="button exit-room" type="danger" v-if="roomStore.inTheRoom" size="small" @click="roomStore.disConnect" plain>退出房间</el-button>
@@ -31,6 +32,8 @@
 		<RoomLookup ref="roomLookupDialogRef"/>
 		<!-- 弹窗：修改用户信息 -->
 		<EditUser ref="editUserDialogRef"/>
+		<!-- 弹窗：房间模板功能 -->
+		<RoomTemplate ref="roomTemplateDialogRef"/>
 	</div>
 </template>
 
@@ -55,6 +58,7 @@ import EditUser from './components/dialog/EditUser.vue';
 import { useRoute } from 'vue-router';
 import { usePathStore } from '../../stores/path';
 import router from '../../router';
+import RoomTemplate from './components/dialog/RoomTemplate.vue';
 
 const route = useRoute();
 
@@ -72,6 +76,7 @@ const createRoomDialogRef = ref(null);
 const joinRoomDialogRef = ref(null);
 const roomLookupDialogRef = ref(null);
 const editUserDialogRef = ref(null);
+const roomTemplateDialogRef = ref(null);
 const selfMarker = ref(null);
 const rallyMarker = ref(null);
 
@@ -252,29 +257,29 @@ onMounted(async () => {
 	}
 
 	// 使用deep修改引用的其它组件的样式
-	:deep(.dialog) {
-		.input-box {
-			height: 80px;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-
-			.input, .input-item {
-				margin-top: 16px;
-
-				&:first-child {
-					margin-top: 0;
-				}
-			}
-		}
-
-		.button-box {
-			position: relative;
-			display: flex;
-			justify-content: space-evenly;
-			align-items: center;
-			bottom: 10px;
-		}
-	}
+	//:deep(.dialog) {
+	//	.input-box {
+	//		height: 80px;
+	//		display: flex;
+	//		flex-direction: column;
+	//		align-items: center;
+	//
+	//		.input, .input-item {
+	//			margin-top: 16px;
+	//
+	//			&:first-child {
+	//				margin-top: 0;
+	//			}
+	//		}
+	//	}
+	//
+	//	.button-box {
+	//		position: relative;
+	//		display: flex;
+	//		justify-content: space-evenly;
+	//		align-items: center;
+	//		bottom: 10px;
+	//	}
+	//}
 }
 </style>

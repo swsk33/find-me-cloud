@@ -1,7 +1,7 @@
 // 房间与会话状态管理
 import { defineStore } from 'pinia';
 import { REQUEST_METHOD, sendRequest } from '../utils/request';
-import { MESSAGE_TYPE, showMessage } from '../utils/element-message';
+import { MESSAGE_TYPE, showInteractiveDialog, showMessage } from '../utils/element-message';
 import { useUserStore } from './user';
 import { useMessageStore } from './message';
 import { useLocationStore } from './location';
@@ -31,6 +31,10 @@ export const useRoomStore = defineStore('roomStore', {
 			 */
 			inTheRoom: false,
 			/**
+			 * 是否是通过模板加入的房间
+			 */
+			isTemplateRoom: false,
+			/**
 			 * 若会话已建立，是否已经通过认证
 			 */
 			authed: false,
@@ -56,10 +60,11 @@ export const useRoomStore = defineStore('roomStore', {
 	actions: {
 		/**
 		 * 连接上一个房间（加入房间）
-		 * @param id 房间id
-		 * @param password 房间密码
+		 * @param {String} id 房间id
+		 * @param {String} password 房间密码（通过模板加入时，该参数无意义）
+		 * @param {Boolean} isTemplate 是否通过模板加入
 		 */
-		connectToRoom(id, password) {
+		connectToRoom(id, password, isTemplate = false) {
 			const locationStore = useLocationStore();
 			if (!locationStore.checkLocationEnabled(true)) {
 				return;
@@ -74,14 +79,22 @@ export const useRoomStore = defineStore('roomStore', {
 			this.session = new WebSocket(REQUEST_PREFIX.SESSION_ROOM_WS + id + '/' + userStore.userData.id);
 			// 连接建立事件
 			this.session.addEventListener('open', (e) => {
-				// 设定在房间内
-				this.inTheRoom = true;
+				// 设定是否通过模板加入房间
+				this.isTemplateRoom = isTemplate;
 				showMessage('已连接至房间！认证中...', MESSAGE_TYPE.warning);
 				// 执行认证
-				this.session.send(JSON.stringify({
-					type: messageStore.messageType.auth,
-					data: password
-				}));
+				let authMessage;
+				if (isTemplate) {
+					authMessage = {
+						type: messageStore.messageType.templateAuth
+					};
+				} else {
+					authMessage = {
+						type: messageStore.messageType.auth,
+						data: password
+					};
+				}
+				this.session.send(JSON.stringify(authMessage));
 				// 打开认证检查
 				this.enableAuthCheck(id, password);
 			});
@@ -165,27 +178,22 @@ export const useRoomStore = defineStore('roomStore', {
 		 * 显示异常退出恢复对话框
 		 */
 		showSessionRestoreDialog() {
-			ElMessageBox.confirm('检测到异常退出，是否恢复会话？', '异常退出', {
-				confirmButtonText: '恢复会话',
-				cancelButtonText: '取消',
-				type: 'warning',
-				center: true,
-				showClose: false,
-				closeOnClickModal: false
-			}).then(() => {
-				// 确认恢复
-				// 重新连接，从缓存拿取信息
-				const room = JSON.parse(localStorage.getItem('room'));
-				if (room == null) {
-					showMessage('恢复会话失败！', MESSAGE_TYPE.error);
-					return;
-				}
-				this.connectToRoom(room.id, room.password);
-			}).catch(() => {
-				// 取消
-				// 清除房间信息
-				this.clearRoomInfo();
-			});
+			showInteractiveDialog('异常退出', '检测到异常退出，是否恢复会话？', '恢复会话', '取消',
+				() => {
+					// 确认恢复
+					// 重新连接，从缓存拿取信息
+					const room = JSON.parse(localStorage.getItem('room'));
+					if (room == null) {
+						showMessage('恢复会话失败！', MESSAGE_TYPE.error);
+						return;
+					}
+					this.connectToRoom(room.id, room.password);
+				},
+				() => {
+					// 取消
+					// 清除房间信息
+					this.clearRoomInfo();
+				});
 		},
 		/**
 		 * 打开认证检查，检查是否会话已完成认证
@@ -196,13 +204,15 @@ export const useRoomStore = defineStore('roomStore', {
 			// 认证检查器
 			const authChecker = setInterval(() => {
 				// 如果连接已断开，则关闭检查
-				if (!this.inTheRoom) {
+				if (this.session.readyState === WebSocket.CLOSED) {
 					this.authed = false;
 					// 取消定时器
 					clearInterval(authChecker);
 				}
 				// 如果authed被置为true则执行认证后操作
 				if (this.authed) {
+					// 认证成功后，再设定用户已在房间内
+					this.inTheRoom = true;
 					// 打开实时位置发送
 					this.enablePositionSender();
 					// 设定房间信息

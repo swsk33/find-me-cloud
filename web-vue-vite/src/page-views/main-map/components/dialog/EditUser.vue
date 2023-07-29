@@ -143,6 +143,9 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+// 导入对话框共用样式
+@import "../../../../assets/scss/dialog.scss";
+
 .edit-user-dialog {
 	.dialog {
 		.content {

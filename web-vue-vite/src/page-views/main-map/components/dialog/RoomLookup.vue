@@ -3,16 +3,16 @@
 	<div class="room-lookup-dialog">
 		<el-dialog class="dialog" v-model="showDialog" width="85vw" top="24vh" :show-close="false" :center="true" destroy-on-close>
 			<template #header>
-				<div class="title">{{ roomStore.roomInfo.name }}</div>
+				<div class="title">{{ (roomStore.isTemplateRoom ? '[模板]' : '') + roomStore.roomInfo.name }}</div>
 			</template>
 			<div class="content">
 				<div class="room-id">
 					<div class="text"><strong>房间id：</strong>{{ roomStore.roomInfo.id }}</div>
-					<el-button class="button" size="small" type="primary" @click="copyRoomId">复制</el-button>
+					<el-button class="button" size="small" type="primary" @click="copyRoomId" v-if="!roomStore.isTemplateRoom">复制</el-button>
 				</div>
 				<div class="room-password">
-					<div class="text"><strong>密码：</strong>{{ roomStore.roomPassword }}</div>
-					<el-button class="button" size="small" type="warning" @click="copyRoomPassword">复制</el-button>
+					<div class="text"><strong>密码：</strong>{{ roomStore.isTemplateRoom ? '（模板房间无密码！）' : roomStore.roomPassword }}</div>
+					<el-button class="button" size="small" type="warning" @click="copyRoomPassword" v-if="!roomStore.isTemplateRoom">复制</el-button>
 				</div>
 				<div class="users">
 					<div class="text">成员：</div>
@@ -30,8 +30,8 @@
 			</div>
 			<template #footer>
 				<div class="button-box">
-					<el-button class="button copy-all" type="success" @click="copyRoomInfo" size="small" plain>复制房间全部信息</el-button>
-					<el-button class="button copy-link" type="primary" size="small" @click="copyJoinLink" plain>复制一键加入链接</el-button>
+					<el-button class="button copy-all" type="success" @click="copyRoomInfo" size="small" plain v-if="!roomStore.isTemplateRoom">复制房间全部信息</el-button>
+					<el-button class="button copy-link" type="primary" size="small" @click="copyJoinLink" plain v-if="!roomStore.isTemplateRoom">复制一键加入链接</el-button>
 					<el-button class="button cancel" type="warning" plain size="small" @click="roomStore.getRoomInfo(roomStore.roomInfo.id)">刷新房间</el-button>
 					<el-button class="button cancel" type="danger" plain size="small" @click="showDialog = false">关闭页面</el-button>
 				</div>
@@ -90,6 +90,9 @@ defineExpose({ showDialog });
 </script>
 
 <style lang="scss" scoped>
+// 导入对话框共用样式
+@import "../../../../assets/scss/dialog.scss";
+
 .room-lookup-dialog {
 	.dialog {
 		.title {
