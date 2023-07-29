@@ -141,7 +141,7 @@ export const useLocationStore = defineStore('locationStore', {
 					longitude: this.position.longitude,
 					latitude: this.position.latitude
 				};
-				// 延时500毫秒取第二次位置并计算移动方向
+				// 延时750毫秒取第二次位置并计算移动方向
 				setTimeout(() => {
 					afterMove = {
 						longitude: this.position.longitude,

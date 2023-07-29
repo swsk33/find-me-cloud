@@ -11,7 +11,7 @@
 					<el-button class="button" size="small" type="primary" @click="copyRoomId" v-if="!roomStore.isTemplateRoom">复制</el-button>
 				</div>
 				<div class="room-password">
-					<div class="text"><strong>密码：</strong>{{ roomStore.isTemplateRoom ? '（模板房间无密码！）' : roomStore.roomPassword }}</div>
+					<div class="text"><strong>密码：</strong>{{ roomStore.isTemplateRoom ? '[模板房间不可分享]' : roomStore.roomPassword }}</div>
 					<el-button class="button" size="small" type="warning" @click="copyRoomPassword" v-if="!roomStore.isTemplateRoom">复制</el-button>
 				</div>
 				<div class="users">

@@ -179,11 +179,13 @@ const parseJoinRoomLink = () => {
 	if (route.params.roomId == null || route.params.roomPassword == null) {
 		return false;
 	}
-	// 执行加入房间操作
-	showMessage('解析一键加入链接完成！', MESSAGE_TYPE.success);
-	roomStore.connectToRoom(route.params.roomId, route.params.roomPassword);
-	// 清空路径
-	router.push('/');
+	// 执行加入房间操作（等待2s后）
+	setTimeout(() => {
+		showMessage('解析一键加入链接完成！', MESSAGE_TYPE.success);
+		roomStore.connectToRoom(route.params.roomId, route.params.roomPassword);
+		// 清空路径
+		router.push('/');
+	}, 2000);
 	return true;
 };
 
@@ -255,31 +257,5 @@ onMounted(async () => {
 		height: 0;
 		width: 0;
 	}
-
-	// 使用deep修改引用的其它组件的样式
-	//:deep(.dialog) {
-	//	.input-box {
-	//		height: 80px;
-	//		display: flex;
-	//		flex-direction: column;
-	//		align-items: center;
-	//
-	//		.input, .input-item {
-	//			margin-top: 16px;
-	//
-	//			&:first-child {
-	//				margin-top: 0;
-	//			}
-	//		}
-	//	}
-	//
-	//	.button-box {
-	//		position: relative;
-	//		display: flex;
-	//		justify-content: space-evenly;
-	//		align-items: center;
-	//		bottom: 10px;
-	//	}
-	//}
 }
 </style>

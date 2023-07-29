@@ -3,7 +3,7 @@
 	<!-- 如果位置信息不可用，就先不显示指针 -->
 	<div class="user-pointer" :style="{left: x + 'px', top: y + 'px'}" v-if="pointerData.position != null && pointerData.position.longitude != null && pointerData.position.latitude != null">
 		<!-- 形态1：在屏幕范围内时，显示指针本身 -->
-		<div class="user-marker" @click="dialogShow = true" v-if="status === pointerStore.POINTER_STATUS.IN_SCREEN">
+		<div class="user-marker" @click="pointerInformationDialogRef.showDialog = true" v-if="status === pointerStore.POINTER_STATUS.IN_SCREEN">
 			<div class="marker-base" :style="{transform: 'rotate(' + locationStore.orientationToCSSRotate(pointerData.position.orientation) + 'deg)'}">
 				<div class="circle" :style="{backgroundColor: pointerData.color, boxShadow: pointerData.color + ' 0 0 6px'}">
 				</div>
@@ -27,29 +27,7 @@
 			<div class="text" :style="{backgroundColor: pointerData.color}" v-if="userData != null">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
 		</div>
 		<!-- 详细信息对话框 -->
-		<el-dialog class="user-info-dialog" width="80%" top="32vh" :center="true" :show-close="false" v-if="userData != null" v-model="dialogShow" destroy-on-close>
-			<!-- 头部 -->
-			<template #header>
-				<div class="header">
-					<img class="avatar" :style="{borderColor: pointerData.color}" :src="userStore.getUserAvatarURL(userData)" alt="无法显示"/>
-					<div class="text">{{ userData.nickname + (props.userId === 0 ? '(我)' : '') }}</div>
-				</div>
-			</template>
-			<div class="content">
-				<ul class="info">
-					<li>经度：{{ pointerData.position.longitude }}</li>
-					<li>纬度：{{ pointerData.position.latitude }}</li>
-					<li>海拔：{{ pointerData.position.elevation == null ? '该用户海拔信息不可用' : pointerData.position.elevation }}</li>
-					<li>方向：{{ getHeading }}</li>
-					<li v-if="props.userId !== 0">距离我：{{ mapStore.getDistance(locationStore.position, pointerData.position) }}米</li>
-				</ul>
-			</div>
-			<template #footer>
-				<div class="button-box">
-					<el-button class="close" type="success" plain @click="dialogShow = false">知道了</el-button>
-				</div>
-			</template>
-		</el-dialog>
+		<PointerInformation ref="pointerInformationDialogRef" :pointer-data="pointerData" :user-data="userData" :user-id="props.userId"/>
 	</div>
 </template>
 
@@ -57,10 +35,11 @@
 import { usePointerStore } from '../../../stores/pointer';
 import { useUserStore } from '../../../stores/user';
 import { useMapStore } from '../../../stores/map';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useLocationStore } from '../../../stores/location';
 import { Top, Bottom, Back, Right, TopRight, TopLeft, BottomRight, BottomLeft, CaretTop, CaretBottom } from '@element-plus/icons-vue';
 import { useRoomStore } from '../../../stores/room';
+import PointerInformation from './dialog/PointerInformation.vue';
 
 // 传入用户id，0表示自己
 const props = defineProps(['userId']);
@@ -70,6 +49,9 @@ const userStore = useUserStore();
 const mapStore = useMapStore();
 const locationStore = useLocationStore();
 const roomStore = useRoomStore();
+
+// 组件引用
+const pointerInformationDialogRef = ref(null);
 
 // 指针基本信息，存放这个指针标记对应的用户的位置信息等等
 let pointerData = reactive({
@@ -106,7 +88,7 @@ const height = ref(0);
 // 高程状态枚举
 const HEIGHT_STATUS = {
 	/**
-	 * 同一水平面（上下误差3米之内，若自己的高程信息不可用，则所有用户都为这个值，若某个用户高程信息不可用，则该用户状态为这个值）
+	 * 同一水平面（上下误差8米之内，若自己的高程信息不可用，则所有用户都为这个值，若某个用户高程信息不可用，则该用户状态为这个值）
 	 * 同一水平面时，指针不显示高程箭头
 	 */
 	AT_SAME_LEVEL: 0,
@@ -119,8 +101,6 @@ const HEIGHT_STATUS = {
 	 */
 	DOWN: 2
 };
-// 详情对话框显示状态
-const dialogShow = ref(false);
 
 /**
  * 刷新指针本身的位置
@@ -154,38 +134,6 @@ const refreshPointerHeight = () => {
 const zoomToPointer = () => {
 	mapStore.zoomToUser(pointerData.position.longitude, pointerData.position.latitude);
 };
-
-// 计算属性：获取方向
-const getHeading = computed(() => {
-	const heading = pointerData.position.orientation;
-	if (heading == null) {
-		return '该用户陀螺仪信息不可用';
-	}
-	if (heading > 345 || heading <= 15) {
-		return '北';
-	}
-	if (heading > 15 && heading <= 75) {
-		return '西北';
-	}
-	if (heading > 75 && heading <= 105) {
-		return '西';
-	}
-	if (heading > 105 && heading <= 165) {
-		return '西南';
-	}
-	if (heading > 165 && heading <= 195) {
-		return '南';
-	}
-	if (heading > 195 && heading <= 255) {
-		return '东南';
-	}
-	if (heading > 255 && heading <= 285) {
-		return '东';
-	}
-	if (heading > 285 && heading <= 345) {
-		return '东北';
-	}
-});
 
 // 导出变量
 defineExpose({ refreshPointerPosition });
@@ -341,42 +289,6 @@ onMounted(() => {
 
 		.top-right, .bottom-right {
 			right: 5px;
-		}
-	}
-
-	// 详细信息对话框
-	.user-info-dialog {
-		.header {
-			position: relative;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			.avatar {
-				height: 32px;
-				border-radius: 50%;
-				border-style: solid;
-				border-width: 2px;
-			}
-
-			.text {
-				position: relative;
-				margin-left: 3%;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-		}
-
-		.content {
-			position: relative;
-		}
-
-		.button-box {
-			position: relative;
-			display: flex;
-			justify-content: center;
-			align-items: center;
 		}
 	}
 }

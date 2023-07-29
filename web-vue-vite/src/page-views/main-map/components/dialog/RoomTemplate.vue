@@ -1,6 +1,7 @@
 <!-- 房间模板对话框 -->
 <template>
 	<div class="room-template-dialog" v-loading.fullscreen.lock="isLoading" element-loading-text="正在获取用户模板...">
+		<!-- 主对话框 -->
 		<el-dialog class="dialog" v-model="showDialog" width="85vw" top="24vh" :show-close="false" :center="true" destroy-on-close>
 			<template #header>
 				<div class="title">房间模板</div>
@@ -19,12 +20,16 @@
 			</div>
 			<template #footer>
 				<div class="button-box">
-					<el-button class="button create-template" type="success" plain size="small">创建模板</el-button>
-					<el-button class="button add-template" type="primary" plain size="small">添加模板</el-button>
-					<el-button class="button cancel" type="danger" plain size="small" @click="showDialog = false">关闭页面</el-button>
+					<el-button class="button create-template" @click="createTemplateDialogRef.showDialog = true" type="success" plain size="small">创建模板</el-button>
+					<el-button class="button add-template" @click="addTemplateDialogRef.showDialog = true" type="primary" plain size="small">添加模板</el-button>
+					<el-button class="button cancel" @click="showDialog = false" type="danger" plain size="small">关闭页面</el-button>
 				</div>
 			</template>
 		</el-dialog>
+		<!-- 创建模板对话框 -->
+		<CreateTemplate ref="createTemplateDialogRef" @data-changed="getAllTemplate"/>
+		<!-- 添加模板对话框 -->
+		<AddTemplate ref="addTemplateDialogRef" @data-changed="getAllTemplate"/>
 	</div>
 </template>
 
@@ -37,9 +42,15 @@ import { Delete, Position, Share } from '@element-plus/icons-vue';
 import { useRoomStore } from '../../../../stores/room';
 import { useUserStore } from '../../../../stores/user';
 import ClipboardJS from 'clipboard';
+import CreateTemplate from './CreateTemplate.vue';
+import AddTemplate from './AddTemplate.vue';
 
 const roomStore = useRoomStore();
 const userStore = useUserStore();
+
+// 引用组件
+const createTemplateDialogRef = ref(null);
+const addTemplateDialogRef = ref(null);
 
 // 是否显示对话框
 const showDialog = ref(false);
