@@ -10,6 +10,8 @@
 			<el-button class="button lookup-room" type="success" v-if="roomStore.inTheRoom" size="small" @click="roomLookupDialogRef.showDialog = true" plain>查看房间</el-button>
 			<el-button class="button lookup-room" type="primary" v-if="roomStore.inTheRoom" size="small" @click="setRally" plain>放集结点</el-button>
 			<el-button class="button exit-room" type="danger" v-if="roomStore.inTheRoom" size="small" @click="roomStore.disConnect" plain>退出房间</el-button>
+			<!-- 如果是IOS设备，需要用户手动启用陀螺仪，在设备为IOS并且方向不可用时显示按钮 -->
+			<el-button class="button enableOrientation" type="danger" v-if="isIOS && locationStore.position.orientation == null" size="small" @click="enableOrientation">启用方向</el-button>
 		</div>
 		<!-- 所有用户指针标识容器 -->
 		<div class="user-marker-container">
@@ -102,6 +104,28 @@ const setRally = () => {
 	showMessage('点击地图上的某处以设定集结点...', MESSAGE_TYPE.success);
 };
 
+// 是否为苹果设备
+const isIOS = ref(false);
+
+/**
+ * 检测是否为苹果设备
+ */
+const checkIOS = () => {
+	const userAgent = navigator.userAgent.toLowerCase();
+	if (userAgent.indexOf('iphone') !== -1 || userAgent.indexOf('ipad') !== -1) {
+		isIOS.value = true;
+	}
+};
+
+/**
+ * 在苹果设备上，手动启用陀螺仪
+ */
+const enableOrientation = async () => {
+	if (DeviceOrientationEvent !== undefined && typeof DeviceOrientationEvent.requestPermission === 'function') {
+		await DeviceOrientationEvent.requestPermission();
+	}
+};
+
 /**
  * 给地图注册事件
  */
@@ -179,6 +203,8 @@ onMounted(async () => {
 	// 完成一些初始化工作
 	// 开启方向自动校正
 	locationStore.enableOrientationAutoFix();
+	// 检测是否是苹果手机
+	checkIOS();
 });
 </script>
 

@@ -47,10 +47,6 @@ export const useMapStore = defineStore('mapStore', {
 				zoom: 16,
 				center: [118.715383, 32.203407]
 			});
-			// 设定尺寸数据
-			const mapSize = this.map.getSize();
-			this.size.width = mapSize.getWidth();
-			this.size.height = mapSize.getHeight();
 		},
 		/**
 		 * 缩放地图到用户
