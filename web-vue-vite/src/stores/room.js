@@ -6,7 +6,6 @@ import { useUserStore } from './user';
 import { useMessageStore } from './message';
 import { useLocationStore } from './location';
 import { usePointerStore } from './pointer';
-import { ElMessageBox } from 'element-plus';
 import { useChatStore } from './chat';
 import { REQUEST_PREFIX } from '../param/request-prefix';
 
@@ -78,7 +77,7 @@ export const useRoomStore = defineStore('roomStore', {
 			const chatStore = useChatStore();
 			this.session = new WebSocket(REQUEST_PREFIX.SESSION_ROOM_WS + id + '/' + userStore.userData.id);
 			// 连接建立事件
-			this.session.addEventListener('open', (e) => {
+			this.session.addEventListener('open', () => {
 				// 设定是否通过模板加入房间
 				this.isTemplateRoom = isTemplate;
 				showMessage('已连接至房间！认证中...', MESSAGE_TYPE.warning);
@@ -105,7 +104,7 @@ export const useRoomStore = defineStore('roomStore', {
 				messageStore.doStrategy(message);
 			});
 			// 断开连接事件
-			this.session.addEventListener('close', (e) => {
+			this.session.addEventListener('close', () => {
 				// 设定不在房间内
 				this.inTheRoom = false;
 				// 重置为未认证
@@ -187,7 +186,7 @@ export const useRoomStore = defineStore('roomStore', {
 						showMessage('恢复会话失败！', MESSAGE_TYPE.error);
 						return;
 					}
-					this.connectToRoom(room.id, room.password);
+					this.connectToRoom(room.id, room.password, room.isTemplate);
 				},
 				() => {
 					// 取消
@@ -221,7 +220,8 @@ export const useRoomStore = defineStore('roomStore', {
 					// 持久化到本地
 					localStorage.setItem('room', JSON.stringify({
 						id: id,
-						password: password
+						password: password,
+						isTemplate: this.isTemplateRoom
 					}));
 					// 取消定时器
 					clearInterval(authChecker);
