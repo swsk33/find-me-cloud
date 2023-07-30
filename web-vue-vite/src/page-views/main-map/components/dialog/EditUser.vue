@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { MESSAGE_TYPE, showMessage } from '../../../../utils/element-message';
 import { REQUEST_METHOD, sendRequest, uploadFile } from '../../../../utils/request';
 import { REQUEST_PREFIX } from '../../../../param/request-prefix';
@@ -133,12 +133,16 @@ const userLogout = async () => {
 	await router.push('/login');
 };
 
+// 定义导出
 defineExpose({ showDialog });
 
-onMounted(() => {
-	// 初始化用于修改提交的用户信息
-	userInfo.value = { ...userStore.userData };
-	previewImage.value = userStore.getUserAvatarURL(userStore.userData);
+// 监听当窗口打开时，设定用户数据到与输入框绑定的对象上
+watch(showDialog, () => {
+	if (showDialog.value) {
+		// 初始化用于修改提交的用户信息
+		userInfo.value = { ...userStore.userData };
+		previewImage.value = userStore.getUserAvatarURL(userStore.userData);
+	}
 });
 </script>
 

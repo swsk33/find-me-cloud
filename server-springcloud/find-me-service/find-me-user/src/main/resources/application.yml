@@ -59,7 +59,7 @@ io:
             - "jpeg"
             - "png"
             - "gif"
-            - "bpm"
+            - "bmp"
       # 邮件验证码配置
       code-post:
         core:

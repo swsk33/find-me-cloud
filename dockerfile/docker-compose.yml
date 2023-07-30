@@ -50,11 +50,14 @@ services:
   consul:
     image: consul
     command: agent -server -ui -node=find-me-node -bootstrap-expect=1 -client=0.0.0.0
+    volumes:
+      - find-me-consul-data:/consul/data
   # MongoDB数据库
   mongodb:
     image: mongo
     volumes:
       - find-me-mongodb-data:/data/db
+      - find-me-mongodb-cluster:/data/configdb
   # Redis数据库
   redis:
     image: redis
@@ -63,6 +66,10 @@ services:
   # Kafka消息中间件
   kafka:
     image: swsk33/kafka-standalone
+    volumes:
+      - find-me-kafka-log:/tmp/kafka-logs
+      - find-me-kafka-config:/kafka/config
+      - find-me-kafka-kraft:/tmp/kraft-combined-logs
     environment:
       - CLUSTER_ID=YWJjZGVmZ2hpamtsbW5vcA==
       - KAFKA_HOST=kafka
@@ -70,4 +77,9 @@ services:
 volumes:
   find-me-nginx-config:
   find-me-mongodb-data:
+  find-me-mongodb-cluster:
   find-me-redis-data:
+  find-me-consul-data:
+  find-me-kafka-log:
+  find-me-kafka-config:
+  find-me-kafka-kraft:
