@@ -7,9 +7,9 @@ COMMAND='exec java -jar '\
 '-Dspring.data.mongodb.port=$MONGO_PORT '\
 '-Dspring.data.redis.host=$REDIS_HOST '\
 '-Dspring.data.redis.port=$REDIS_PORT '\
-'-Dspring.mail.host=$EMAIL_SMTP_HOST '\
-'-Dspring.mail.username=$EMAIL_USER '\
-'-Dspring.mail.password=$EMAIL_PASSWORD '
+'-Dio.github.swsk33.code-post.core.smtp-host=$EMAIL_SMTP_HOST '\
+'-Dio.github.swsk33.code-post.core.email=$EMAIL_USER '\
+'-Dio.github.swsk33.code-post.core.password=$EMAIL_PASSWORD '
 
 if [ -n "$APP_HOST" ]; then
 	COMMAND=$COMMAND'-Dspring.cloud.consul.discovery.ip-address=$APP_HOST '
@@ -26,6 +26,6 @@ fi
 if [ -n "$REDIS_PASSWORD" ]; then
 	COMMAND=$COMMAND'-Dspring.data.redis.password=$REDIS_PASSWORD '
 fi
-	
+
 COMMAND=$COMMAND'find-me-user.jar'
 eval "$COMMAND"

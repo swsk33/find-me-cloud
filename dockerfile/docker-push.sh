@@ -11,13 +11,11 @@ else
 	docker push swsk33/find-me-gateway:$VERSION
 	docker push swsk33/find-me-user:$VERSION
 	docker push swsk33/find-me-session:$VERSION
-	docker push swsk33/find-me-image:$VERSION
 	# 覆盖latest
 	docker push swsk33/find-me-web
 	docker push swsk33/find-me-gateway
 	docker push swsk33/find-me-user
 	docker push swsk33/find-me-session
-	docker push swsk33/find-me-image
 	# 退出登录
 	docker logout
 fi

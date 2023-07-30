@@ -39,24 +39,17 @@ services:
     environment:
       - CONSUL_HOST=consul
       - REDIS_HOST=redis
+      - MONGO_HOST=mongodb
       - KAFKA_URL=kafka:9092
     links:
       - consul
       - redis
-      - kafka
-  # 图片模块
-  find-me-image:
-    image: swsk33/find-me-image
-    environment:
-      - CONSUL_HOST=consul
-      - MONGO_HOST=mongodb
-    links:
-      - consul
       - mongodb
+      - kafka
   # Consul注册中心
   consul:
     image: consul
-    command: agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+    command: agent -server -ui -node=find-me-node -bootstrap-expect=1 -client=0.0.0.0
   # MongoDB数据库
   mongodb:
     image: mongo
@@ -71,13 +64,8 @@ services:
   kafka:
     image: swsk33/kafka-standalone
     environment:
-      - ZOOKEEPER_URL=zookeeper:2181
+      - CLUSTER_ID=YWJjZGVmZ2hpamtsbW5vcA==
       - KAFKA_HOST=kafka
-    links:
-      - zookeeper
-  # Zookeeper
-  zookeeper:
-    image: zookeeper
 
 volumes:
   find-me-nginx-config:
