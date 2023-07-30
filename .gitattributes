@@ -1,2 +1,4 @@
-# 设定shell脚本文本文件换行符始终保持LF
+# 设定shell脚本文本文件等换行符始终保持LF
 *.sh text eol=lf
+docker-compose.yml text eol=lf
+nginx.conf text eol=lf
