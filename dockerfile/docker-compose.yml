@@ -1,7 +1,7 @@
 services:
   # Nginx反向代理
   find-me-nginx:
-    image: swsk33/find-me-web
+    image: swsk33/find-me-web-supermap
     volumes:
       - find-me-nginx-config:/etc/nginx
     ports:

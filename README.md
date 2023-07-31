@@ -35,7 +35,7 @@
 
 该平台前端使用Vue 3框架进行开发，使用Vite作为构建工具，主要由下列部分组成：
 
-- 高德地图API
+- Supermap iClient JavaScript作为WebGIS库
 - element-plus 组件库
 - Vue Router 单页路由
 - Pinia 状态管理
