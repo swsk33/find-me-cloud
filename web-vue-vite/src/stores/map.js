@@ -1,6 +1,5 @@
 // 地图
 import { defineStore } from 'pinia';
-import AMapLoader from '@amap/amap-jsapi-loader';
 import { useLocationStore } from './location';
 
 /**
@@ -10,14 +9,9 @@ import { useLocationStore } from './location';
  * @property {Number} elevation 海拔
  * @property {Number} orientation 方向
  */
-
 export const useMapStore = defineStore('mapStore', {
 	state() {
 		return {
-			/**
-			 * 高德地图加载器对象（官方文档中的AMap全局对象）
-			 */
-			mapLoader: undefined,
 			/**
 			 * 地图对象
 			 */
@@ -36,17 +30,19 @@ export const useMapStore = defineStore('mapStore', {
 		 * 初始化地图
 		 * @param {String} containerId 用于显示地图的元素id
 		 */
-		async initMap(containerId) {
-			// 创建地图加载器
-			this.mapLoader = await AMapLoader.load({
-				key: 'b07dd8d78aefc5fb085202842422940d',
-				version: '2.0'
-			});
+		initMap(containerId) {
 			// 创建地图
-			this.map = new this.mapLoader.Map(containerId, {
-				zoom: 16,
-				center: [118.715383, 32.203407]
+			this.map = L.map(containerId, {
+				zoom: 17,
+				center: this.createLatLng({
+					longitude: 118.715383,
+					latitude: 32.203407
+				}),
+				zoomControl: false
 			});
+			// 加入高德瓦片图
+			const mapURL = 'https://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}';
+			L.tileLayer(mapURL).addTo(this.map);
 		},
 		/**
 		 * 缩放地图到用户
@@ -59,10 +55,16 @@ export const useMapStore = defineStore('mapStore', {
 				if (!locationStore.checkLocationEnabled(true)) {
 					return;
 				}
-				this.map.setZoomAndCenter(17, [locationStore.position.longitude, locationStore.position.latitude]);
+				this.map.setView(this.createLatLng({
+					longitude: locationStore.position.longitude,
+					latitude: locationStore.position.latitude
+				}), 17);
 				return;
 			}
-			this.map.setZoomAndCenter(17, [longitude, latitude]);
+			this.map.setView(this.createLatLng({
+				longitude: longitude,
+				latitude: latitude
+			}), 17);
 		},
 		/**
 		 * 计算起点和终点两点距离
@@ -71,7 +73,15 @@ export const useMapStore = defineStore('mapStore', {
 		 * @return {Number} 距离（单位：米）
 		 */
 		getDistance(start, end) {
-			return this.mapLoader.GeometryUtil.distance([start.longitude, start.latitude], [end.longitude, end.latitude]);
+			return this.createLatLng(start).distanceTo(this.createLatLng(end));
+		},
+		/**
+		 * 将自定义的经纬度对象转换为leaflet中的LatLng对象
+		 * @param {Position} position 经纬度对象
+		 * @return {LatLng} leaflet中的LatLng对象
+		 */
+		createLatLng(position) {
+			return L.latLng(position.latitude, position.longitude);
 		}
 	},
 	getters: {
@@ -88,8 +98,8 @@ export const useMapStore = defineStore('mapStore', {
 				if (state.map == null || longitude == null || latitude == null) {
 					return [0, 0];
 				}
-				const result = state.map.lngLatToContainer([longitude, latitude]);
-				return [result.getX(), result.getY()];
+				const result = state.map.latLngToContainerPoint(L.latLng(latitude, longitude));
+				return [result.x, result.y];
 			};
 		}
 	}

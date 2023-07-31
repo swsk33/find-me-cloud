@@ -132,18 +132,28 @@ const enableOrientation = async () => {
 };
 
 /**
+ * 刷新全部指针
+ */
+const refreshPointers = () => {
+	// 刷新用户标志
+	selfMarker.value.refreshPointerPosition();
+	for (let item of othersMarker.value) {
+		item.refreshPointerPosition();
+	}
+	// 刷新集结点指针
+	rallyMarker.value.refreshPosition();
+};
+
+/**
  * 给地图注册事件
  */
 const registerMapEvents = () => {
 	// 当地图被移动、缩放时，刷新地图上所有指针位置
-	mapStore.map.on('mapmove', () => {
-		// 刷新用户标志
-		selfMarker.value.refreshPointerPosition();
-		for (let item of othersMarker.value) {
-			item.refreshPointerPosition();
-		}
-		// 刷新集结点指针
-		rallyMarker.value.refreshPosition();
+	mapStore.map.on('move', () => {
+		refreshPointers();
+	});
+	mapStore.map.on('zoom', () => {
+		refreshPointers();
 	});
 	// 地图被点击时，如果是设定集结点状态，则执行设定集结点操作
 	mapStore.map.on('click', (e) => {
@@ -152,8 +162,8 @@ const registerMapEvents = () => {
 		}
 		// 设定集结点
 		roomStore.roomInfo.rally = {
-			longitude: e.lnglat.getLng(),
-			latitude: e.lnglat.getLat()
+			longitude: e.latlng.lng,
+			latitude: e.latlng.lat
 		};
 		// 广播出去
 		roomStore.session.send(JSON.stringify({
@@ -189,9 +199,9 @@ const parseJoinRoomLink = () => {
 	return true;
 };
 
-onMounted(async () => {
+onMounted(() => {
 	// 初始化地图
-	await mapStore.initMap('map-container');
+	mapStore.initMap('map-container');
 	// 给地图注册事件
 	registerMapEvents();
 	// 等待3秒后缩放至用户
@@ -227,12 +237,14 @@ onMounted(async () => {
 		position: absolute;
 		left: 5%;
 		bottom: 6%;
+		z-index: 999;
 	}
 
 	.update-user-info {
 		position: absolute;
 		left: 2%;
-		top: 1%
+		top: 1%;
+		z-index: 999;
 	}
 
 	> .room-button-box {
@@ -244,6 +256,7 @@ onMounted(async () => {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		z-index: 999;
 
 		.button {
 			position: relative;
@@ -256,6 +269,11 @@ onMounted(async () => {
 		position: absolute;
 		height: 0;
 		width: 0;
+		z-index: 999;
+	}
+
+	.rally-point-marker, .chat {
+		z-index: 999;
 	}
 }
 </style>
