@@ -5,6 +5,10 @@
 /**/*.jar
 /**/*.tar
 
+# appbuild
+/app-build/build-project/static/
+/app-build/build-project/unpackage/
+
 # vscode
 /**/.vscode/
 

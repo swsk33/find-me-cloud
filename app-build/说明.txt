@@ -1,0 +1,7 @@
+该目录存放用于构建5+APP的配置文件、资源文件等等。
+首先执行build.sh构建脚本，然后使用HBuilderX打开该目录下的build-project目录即可进行云打包。
+build.sh脚本语法如下：
+
+./build.sh "后端服务器请求地址"
+
+后端服务器请求地址需要是https://xxx.com的形式。

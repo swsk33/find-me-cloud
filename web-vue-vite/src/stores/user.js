@@ -1,6 +1,6 @@
 // 用户状态
 import { defineStore } from 'pinia';
-import { REQUEST_METHOD, sendRequest } from '../utils/request';
+import { combinePath, REQUEST_METHOD, sendRequest } from '../utils/request';
 import { REQUEST_PREFIX } from '../param/request-prefix';
 import defaultAvatar from '../assets/avatar/default-avatar.jpg';
 
@@ -48,7 +48,7 @@ export const useUserStore = defineStore('userStore', {
 			if (user == null || user.avatarId == null) {
 				return defaultAvatar;
 			}
-			return REQUEST_PREFIX.USER_AVATAR + 'get/' + user.avatarId;
+			return combinePath(REQUEST_PREFIX.USER_AVATAR + 'get/' + user.avatarId);
 		}
 	}
 });

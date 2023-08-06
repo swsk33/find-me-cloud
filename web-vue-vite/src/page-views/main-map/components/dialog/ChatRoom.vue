@@ -38,6 +38,7 @@ import { useRoomStore } from '../../../../stores/room';
 import { useUserStore } from '../../../../stores/user';
 import { useMessageStore } from '../../../../stores/message';
 import { usePointerStore } from '../../../../stores/pointer';
+import { isEmpty } from '../../../../utils/string-util';
 
 const chatStore = useChatStore();
 const roomStore = useRoomStore();
@@ -56,7 +57,7 @@ const chatMessage = reactive({
  * 发送消息方法
  */
 const sendMessage = () => {
-	if (chatMessage.data === '') {
+	if (isEmpty(chatMessage.data)) {
 		showMessage('发送的消息不能为空！', MESSAGE_TYPE.error);
 		return;
 	}

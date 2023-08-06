@@ -1,5 +1,7 @@
 // 存放一些服务的API请求前缀
 
+import { combineWebsocketPath } from '../utils/request';
+
 /**
  * 全部前缀
  */
@@ -19,7 +21,7 @@ const SESSION_PREFIX = PREFIX + 'session/';
  * 全部的WebSocket前缀<br>
  * 由于Vite配置了https，因此这里地址也要是wss://开头！否则不会走Vite的代理配置
  */
-const WS_PREFIX = 'wss://' + location.host + '/ws/';
+const WS_PREFIX = combineWebsocketPath('/ws/');
 
 /**
  * 会话模块的WebSocket地址前缀

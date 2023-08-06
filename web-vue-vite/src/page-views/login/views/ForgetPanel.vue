@@ -23,6 +23,7 @@ import { useRouter } from 'vue-router';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/element-message';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { isEmpty } from '../../../utils/string-util';
 
 const router = useRouter();
 
@@ -46,7 +47,7 @@ const userData = reactive({
  */
 const sendCode = async () => {
 	// 值校验
-	if (userData.email === '' || userData.email == null) {
+	if (isEmpty(userData.email)) {
 		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
@@ -77,7 +78,7 @@ const sendCode = async () => {
  */
 const doReset = async () => {
 	// 值校验
-	if (code.value === '' || code.value == null) {
+	if (isEmpty(code.value)) {
 		showNotification('错误', '验证码不能为空！', MESSAGE_TYPE.error);
 		return;
 	}

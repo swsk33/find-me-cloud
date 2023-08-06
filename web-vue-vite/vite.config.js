@@ -7,6 +7,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
+	base: './',
 	plugins: [
 		vue(),
 		basicSsl(),

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.gitee.swsk33</groupId>
 		<artifactId>find-me-service</artifactId>
-		<version>2.0.1</version>
+		<version>2.0.2</version>
 	</parent>
 	<artifactId>find-me-user</artifactId>
 	<name>find-me-user</name>
